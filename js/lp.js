@@ -186,21 +186,25 @@ function parse_contents(cont){
 	return result;
 }
 
-/* =chage_page */
-function change_page(pred_fn, move_fn){
-	if(pred_fn(CURRENT_PAGE)){
-		$("#slide" + CURRENT_PAGE).hide(500);
-		CURRENT_PAGE = move_fn(CURRENT_PAGE);
-		$("#slide" + CURRENT_PAGE).show(500);
-	}
+/* =toggle_slide */
+function toggle_slide(from, to){
+	$("#slide" + from).hide(500);
+	$("#slide" + to).show(500);
 }
+
+/* =next */
 function next(){
-	change_page(function(cp){ return cp < SLIDE_LENGTH; },
-		function(cp){ return ++cp; });
+	var last = CURRENT_PAGE;
+	if(CURRENT_PAGE < SLIDE_LENGTH) ++CURRENT_PAGE;
+	else CURRENT_PAGE = 0;
+	toggle_slide(last, CURRENT_PAGE);
 }
+/* =prev */
 function prev(){
-	change_page(function(cp){ return cp > 0; },
-		function(cp){ return --cp; });
+	var last = CURRENT_PAGE;
+	if(CURRENT_PAGE > 0) --CURRENT_PAGE;
+	else CURRENT_PAGE = SLIDE_LENGTH;
+	toggle_slide(last, CURRENT_PAGE);
 }
 
 /* =move_page */
@@ -219,6 +223,7 @@ function update_font_size(){
 	font_size = (font_size > toc.height() / 10) ? toc.height() / 10 : font_size;
 	$("h2").css("font-size", font_size + "px");
 	$("body").css("font-size", font_size / 2 + "px");
+	$("code").css("font-size", font_size / 3 + "px");
 }
 
 /* =table_of_contents */
