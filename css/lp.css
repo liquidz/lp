@@ -1,0 +1,63 @@
+body, h1, h2, h3, h4, h5, h6, ul, li, p {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	text-align: center;
+	font-family: "sans-serif";
+}
+div.slide {
+	margin: 1% auto 0 auto;
+	border: 1px solid #ddd;
+	width: 95%;
+	height: 95%;
+
+	text-align: left;
+}
+div.slide div.main {
+	height: 95%;
+}
+div.slide p.pager {
+	margin-right: 1%;
+	text-align: right;
+	font-weight: bold;
+}
+/* title */
+div.slide div.main h2 {
+	text-align: center;
+	font-size: 100%;
+	margin-bottom: 1em;
+}
+div.slide div.main p, div.slide div.main ul, div.slide div.main div.code {
+	margin-left: 5%;
+}
+div.slide div.main ul {
+	margin-top: 1em;
+	margin-bottom: 1em;
+	text-indent: 1em;
+}
+div.slide div.main ul li {
+	line-height: 1.5em;
+}
+
+div.slide div.main ul.sublist {
+	margin-top: 0;
+	margin-bottom: 0.5em;
+	text-indent: 1em;
+}
+div.slide div.main ul.sublist li {
+	line-height: 1.2em;
+}
+
+div.slide div.main div.code {
+	background: #fff;
+	padding: 0.5%;
+	margin-right: 5%;
+	border: 1px solid #aaa;
+}
+
+
+.center {
+	text-align: center;
+}
