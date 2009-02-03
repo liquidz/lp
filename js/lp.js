@@ -216,6 +216,7 @@ function update_font_size(){
 	var toc = $("#slide0");
 	var title = $("#slide0 div.main h2")
 	var font_size = (toc.width() * 4 / 5) / ((title.text().length > 10) ? title.text().length / 2 : title.text().length);
+	font_size = (font_size > toc.height() / 10) ? toc.height() / 10 : font_size;
 	$("h2").css("font-size", font_size + "px");
 	$("body").css("font-size", font_size / 2 + "px");
 }
