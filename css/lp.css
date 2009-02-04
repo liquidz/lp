@@ -9,9 +9,10 @@ body {
 }
 div.slide {
 	margin: 1% auto 0 auto;
+	padding: 0.5%;
 	border: 1px solid #ddd;
-	width: 95%;
-	height: 95%;
+	width: 94%;
+	height: 94%;
 
 	text-align: left;
 }
@@ -19,7 +20,6 @@ div.slide div.main {
 	height: 95%;
 }
 div.slide p.pager {
-	margin-right: 1%;
 	text-align: right;
 	font-weight: bold;
 }

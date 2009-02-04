@@ -16,11 +16,16 @@ function Slide(title, page){
 	this.title = title;
 	this.page = page;
 	this.body = new Array();
+	this.subsection = false;
 };
 Slide.prototype = {
 	add: function(obj){
 		this.body.push(obj);
 		return this;
+	},
+
+	set_subsection: function(bool){
+		this.subsection = bool;
 	},
 	
 	to_s: function(){
@@ -86,7 +91,7 @@ function parse_contents(cont){
 
 	var str = cont;
 	while(str != ""){
-		if(str.match(/^\=\s*(.+?)(\n|$)/)){
+		if(str.match(/^(\=+)\s*(.+?)(\n|$)/)){
 			// header
 
 			/* リストを作成中だったら閉じる */
@@ -100,9 +105,11 @@ function parse_contents(cont){
 			}
 			if(page != null) result.push(page);
 
-			var title = RegExp.$1;
+			var level = RegExp.$1.length;
+			var title = RegExp.$2;
 			var rest = RegExp.rightContext
 			page = new Slide(title, page_count++);
+			if(level > 1) page.set_subsection(true);
 			str = jQuery.trim(rest);
 		} else if(str.match(/^(\*+)\s*(.+?)(\n|$)/)){
 			// list
@@ -115,8 +122,10 @@ function parse_contents(cont){
 				lists[level] = new List();
 				if(level > 0) lists[level].sub_list(true);
 			} else if(level < last_level){
-				lists[level].add(lists[last_level].finish());
-				lists[last_level] = null;
+				for(var i = last_level; i > level; --i){
+					lists[i - 1].add(lists[i].finish());
+					lists[i] = null;
+				}
 			}
 			lists[level].add(elem("li").text(text));
 
@@ -219,11 +228,12 @@ function move_page(e){
 function update_font_size(){
 	var toc = $("#slide0");
 	var title = $("#slide0 div.main h2")
-	var font_size = (toc.width() * 4 / 5) / ((title.text().length > 10) ? title.text().length / 2 : title.text().length);
-	font_size = (font_size > toc.height() / 10) ? toc.height() / 10 : font_size;
+	var font_size = (toc.width() * 3 / 5) / ((title.text().length > 10) ? title.text().length / 2 : title.text().length);
+	font_size = (font_size > toc.height() / 12) ? toc.height() / 12 : font_size;
 	$("h2").css("font-size", font_size + "px");
-	$("body").css("font-size", font_size / 2 + "px");
+	$("body").css("font-size", font_size * 2 / 5 + "px");
 	$("code").css("font-size", font_size / 3 + "px");
+	$("p.pager").css("font-size", font_size / 3 + "px");
 }
 
 /* =table_of_contents */
@@ -243,7 +253,8 @@ function table_of_contents(title, slides){
 	// sections
 	toc.add(p("Table of Contents"));
 	jQuery.each(slides, function(){
-		list.add(elem("li").text(this.title));
+		if(!this.subsection)
+			list.add(elem("li").text(this.title));
 	});
 	toc.add(list.finish());
 
@@ -270,7 +281,7 @@ function initialize(){
 $(function(){
 	var title = $("head title").text();
 	var body = $("body");
-	var contents = jQuery.trim(body.text());
+	var contents = jQuery.trim($("body pre").text());
 
 	/* clear body */
 	body.text("");
