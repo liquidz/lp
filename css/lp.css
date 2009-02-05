@@ -29,7 +29,10 @@ div.slide div.main h2 {
 	font-size: 100%;
 	margin-bottom: 1em;
 }
-div.slide div.main p, div.slide div.main ul, div.slide div.main div.code {
+div.slide div.main h3,
+div.slide div.main p,
+div.slide div.main ul,
+div.slide div.main div.code {
 	margin-left: 5%;
 }
 div.slide div.main ul {
