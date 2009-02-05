@@ -94,7 +94,25 @@ lp.Slide.prototype = {
 		});
 
 		box.append(main);
-		box.append(lp.common.p(this.page).addClass(lp.class.pager));
+		var link = lp.common.elem("p");
+		link.append(lp.common.elem("a").attr("href", "http://github.com/liquidz/lp/tree/master").text("powered by lp"));
+		link.css("float", "left");
+
+		var pager = lp.common.elem("p");
+		pager.addClass(lp.class.pager);
+		pager.text(this.page);
+		pager.css("float", "right");
+
+		var clearer = lp.common.elem("div");
+		clearer.css("clear", "both");
+		clearer.css("height", "0");
+		clearer.css("font-size", "0");
+
+		box.append(link);
+		box.append(pager);
+		box.append(clearer);
+
+		//box.append(lp.common.p(this.page).addClass(lp.class.pager));
 		return box;
 	}
 };
