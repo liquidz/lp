@@ -15,6 +15,11 @@ var lp = {};
 lp.slide = [];
 lp.current_slide = 0;
 lp.options = {};
+lp.mode_kind = {
+	slide: 0,
+	view_all: 1
+};
+lp.mode = lp.mode_kind.slide;
 
 lp.common = {
 	elem: function(tag){
@@ -26,6 +31,14 @@ lp.common = {
 	}
 };
 
+lp.key = {
+	up: 38,
+	down: 40,
+	right: 39,
+	left: 37,
+	home: 36
+};
+
 lp.class = {
 	slide: ["slide", "main"],
 	pager: "pager",
@@ -34,6 +47,21 @@ lp.class = {
 lp.id = {
 	slide: "#slide"
 };
+
+lp.style = {
+	slide: {
+		slide_mode : {
+			width: "94%",
+			height: "94%",
+			margin: "1% auto 0 auto",
+			float: "none"
+		},
+		view_all_mode: {
+			float: "left",
+			margin: "1%"
+		}
+	}
+}
 
 /* =Slide Class
  ---------------------------------------------- */
@@ -116,20 +144,23 @@ lp.parse_contents = function(cont){
 	var last_level = 0;
 	lists[0] = new lp.List();
 
+	var close_lists = function(){
+		for(var i = last_level; i > 0; --i){
+			lists[i-1].add(lists[i].finish());
+			lists[i] = null;
+		}
+		page.add(lists[0].finish());
+		last_level = 0;
+	};
+
 	var str = cont;
 	while(str != ""){
 		if(str.match(/^(\=+)\s*(.+?)(\n|$)/)){
 			// header
 
 			/* リストを作成中だったら閉じる */
-			if(lists[last_level].is_active()){
-				for(var i = last_level; i > 0; --i){
-					lists[i-1].add(lists[i].finish());
-					lists[i] = null;
-				}
-				page.add(lists[0].finish());
-				last_level = 0;
-			}
+			if(lists[last_level].is_active()) close_lists();
+
 			if(page != null) result.push(page);
 
 			var level = RegExp.$1.length;
@@ -169,18 +200,23 @@ lp.parse_contents = function(cont){
 			// code
 
 			/* リストを作成中だったら閉じる */
-			if(lists[last_level].is_active()){
-				for(var i = last_level; i > 0; --i){
-					lists[i-1].add(lists[i].finish());
-					lists[i] = null;
-				}
-				page.add(lists[0].finish());
-				last_level = 0;
-			}
+			if(lists[last_level].is_active()) close_lists();
 
 			var text = RegExp.$1;
 			var rest = RegExp.rightContext;
 			page.add(lp.common.elem("div").addClass("code").append(lp.common.elem("code").addClass("prettyprint").text(jQuery.trim(text))));
+			str = jQuery.trim(rest);
+		} else if(str.match(/^#ref\((.+?)\)/)){
+			// image
+
+			/* リストを作成中だったら閉じる */
+			if(lists[last_level].is_active()) close_lists();
+
+			var text = RegExp.$1;
+			var rest = RegExp.rightContext;
+
+			page.add(lp.common.elem("img").attr("src", text));
+
 			str = jQuery.trim(rest);
 		} else if(str.match(/^\%(.+?)(\n|$)/)){
 			// option
@@ -194,14 +230,7 @@ lp.parse_contents = function(cont){
 			// p
 
 			/* リストを作成中だったら閉じる */
-			if(lists[last_level].is_active()){
-				for(var i = last_level; i > 0; --i){
-					lists[i-1].add(lists[i].finish());
-					lists[i] = null;
-				}
-				page.add(lists[0].finish());
-				last_level = 0;
-			}
+			if(lists[last_level].is_active()) close_lists();
 
 			if(str.match(/(.+?)\n/)){
 				var text = RegExp.$1;
@@ -219,46 +248,56 @@ lp.parse_contents = function(cont){
 	return result;
 };
 
+/* =get_effect_speed
+ ---------------------------------------------- */
+lp.get_effect_speed = function(){
+	return (lp.options["nowait"]) ? 0 : 500;
+};
+
 /* =toggle_slide
  ---------------------------------------------- */
 lp.toggle_slide = function(from, to){
-	$(lp.id.slide + from).hide(500);
-	$(lp.id.slide + to).show(500);
+	$(lp.id.slide + from).hide(lp.get_effect_speed());
+	$(lp.id.slide + to).show(lp.get_effect_speed());
 };
 
 /* =next
  ---------------------------------------------- */
 lp.next = function(){
-	var last = lp.current_slide;
-	if(lp.current_slide < lp.slide.length) ++lp.current_slide;
-	else lp.current_slide = 0;
-	lp.toggle_slide(last, lp.current_slide);
+	if(lp.mode == lp.mode_kind.slide){
+		var last = lp.current_slide;
+		if(lp.current_slide < lp.slide.length - 1) ++lp.current_slide;
+		else lp.current_slide = 0;
+		lp.toggle_slide(last, lp.current_slide);
+	}
 };
 /* =prev
  ---------------------------------------------- */
 lp.prev = function(){
-	var last = lp.current_slide;
-	if(lp.current_slide > 0) --lp.current_slide;
-	else lp.current_slide = lp.slide.length;
-	lp.toggle_slide(last, lp.current_slide);
+	if(lp.mode == lp.mode_kind.slide){
+		var last = lp.current_slide;
+		if(lp.current_slide > 0) --lp.current_slide;
+		else lp.current_slide = lp.slide.length - 1;
+		lp.toggle_slide(last, lp.current_slide);
+	}
 };
 
-/* =move_page
+/* =update_size
  ---------------------------------------------- */
-lp.move_page = function(e){
-	var mx = e.pageX;
-	var w = $(lp.id.slide + "0").width();
+lp.update_size = function(){
+	if(lp.mode == lp.mode_kind.view_all){
+		var w = $("body").width();
+		var s = $("div." + lp.class.slide[0]);
+		s.width(w * 14 / 64);
+		s.height(s.width() * 2 / 3);
+	}
 
-	(mx < w/2) ? lp.prev() : lp.next();
-};
-
-/* =update_font_size
- ---------------------------------------------- */
-lp.update_font_size = function(){
-	var toc = $(lp.id.slide + "0");
+	// スライド一覧からTOCを選ぶと何故かフォントサイズがちゃんと変更されないので
+	// TOCを表示する場合には違うスライドを選ぶ
+	var ss = $(lp.id.slide + ((lp.current_slide == 0) ? "1" : "0"));
 	var title = $(lp.id.slide + "0 div." + lp.class.slide[1] + " h2")
-	var font_size = (toc.width() * 3 / 5) / ((title.text().length > 10) ? title.text().length / 2 : title.text().length);
-	font_size = (font_size > toc.height() / 12) ? toc.height() / 12 : font_size;
+	var font_size = (ss.width() * 3 / 5) / ((title.text().length > 10) ? title.text().length / 2 : title.text().length);
+	font_size = (font_size > ss.height() / 12) ? ss.height() / 12 : font_size;
 	$("h2").css("font-size", font_size + "px");
 	$("body").css("font-size", font_size * 2 / 5 + "px");
 	$("code").css("font-size", font_size / 3 + "px");
@@ -267,8 +306,7 @@ lp.update_font_size = function(){
 
 /* =table_of_contents
  ---------------------------------------------- */
-lp.table_of_contents = function(){
-	var title = lp.slide[0].title;
+lp.table_of_contents = function(title){
 	var toc = new lp.Slide(title, 0);
 	var list = new lp.List();
 
@@ -289,19 +327,89 @@ lp.table_of_contents = function(){
 	});
 	toc.add(list.finish());
 
-	return toc.to_s();
+	return toc;
+};
+
+/* =change_to_slide_mode
+ ---------------------------------------------- */
+lp.change_to_slide_mode = function(){
+	var slides = $("div." + lp.class.slide[0]);
+	for(var key in lp.style.slide.slide_mode){
+		slides.css(key, lp.style.slide.slide_mode[key]);
+	}
+	slides.hide();
+	$(lp.id.slide + lp.current_slide).show(lp.get_effect_speed());
+	$("img").show();
+
+	slides.unbind("click", lp.select_slide);
+
+	lp.mode = lp.mode_kind.slide;
+	lp.update_size();
+};
+
+/* =change_to_view_all_mode
+ ---------------------------------------------- */
+lp.change_to_view_all_mode = function(){
+	var slides = $("div." + lp.class.slide[0]);
+	for(var key in lp.style.slide.view_all_mode){
+		slides.css(key, lp.style.slide.view_all_mode[key]);
+	}
+
+	slides.show();
+	// スライド一覧モードでは画像を表示しない
+	$("img").hide();
+
+	slides.bind("click", lp.select_slide);
+
+	lp.mode = lp.mode_kind.view_all;
+	lp.update_size();
+};
+
+/* =select_slide
+ ---------------------------------------------- */
+lp.select_slide = function(e){
+	lp.current_slide = parseInt(e.currentTarget.id.substr(lp.id.slide.length - 1));
+	lp.change_to_slide_mode();
+};
+
+/* =key_control
+ ---------------------------------------------- */
+lp.key_control = function(e){
+	switch(e.keyCode){
+	case lp.key.right:
+	case lp.key.down:
+		lp.next();
+		break;
+
+	case lp.key.left:
+	case lp.key.up:
+		lp.prev();
+		break;
+
+	case lp.key.home:
+		if(lp.mode == lp.mode_kind.slide){
+			lp.change_to_view_all_mode();
+		} else {
+			lp.change_to_slide_mode();
+		}
+		break;
+
+	default:
+		break;
+	}
 };
 
 /* =initialize
  ---------------------------------------------- */
 lp.initialize = function(){
 	// change font size
-	lp.update_font_size();
+	lp.update_size();
 
 	// add events
 	var w = $(window);
-	w.bind("resize", lp.update_font_size);
-	w.bind("click", lp.move_page);
+	w.bind("resize", lp.update_size);
+
+	w.bind("keypress", lp.key_control);
 
 	// set options
 	var body = $("body");
@@ -322,13 +430,16 @@ $(function(){
 	/* parse body text */
 	lp.slide = lp.parse_contents(contents);
 
+	lp.slide.unshift(lp.table_of_contents(title));
+
 	/* add table of contents(page = 0) */
-	body.append(lp.table_of_contents());
+	//body.append(lp.table_of_contents(title));
 
 	/* add each slides(page = 1 - lp.slide.length)*/
 	jQuery.each(lp.slide, function(){
 		body.append(this.to_s());
-		$(lp.id.slide + this.page).hide();
+		if(this.page != 0)
+			$(lp.id.slide + this.page).hide();
 	});
 
 	/* initialize */
