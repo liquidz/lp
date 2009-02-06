@@ -19,7 +19,7 @@ div.slide {
 div.slide div.main {
 	height: 95%;
 }
-div.slide p.pager {
+div.slide .pager {
 	text-align: right;
 	font-weight: bold;
 }

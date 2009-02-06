@@ -22,14 +22,25 @@ lp.mode_kind = {
 lp.mode = lp.mode_kind.slide;
 
 lp.common = {
-	elem: function(tag){
-		return jQuery(document.createElement(tag));
+	elem: function(tag, op){
+		var e = jQuery(document.createElement(tag));
+		if(op){
+			for(var key in arguments[1]){
+				if(key == "class") e.addClass(arguments[1][key]);
+				else if(key == "text") e.text(arguments[1][key]);
+				else if(key == "html") e.html(arguments[1][key]);
+				else e.attr(key, arguments[1][key]);
+			}
+		}
+		return e;
 	},
 
 	p: function(text){
-		return this.elem("p").text(text);
+		return this.elem("p", {text: text});
 	}
 };
+
+lp.effect_speed = 500;
 
 lp.key = { up: 38, down: 40, right: 39, left: 37, home: 36 };
 
@@ -57,11 +68,46 @@ lp.style = {
 	}
 };
 
-lp.show = function(obj){
-	obj.show(lp.get_effect_speed());
+/* ----------- customable functions ----------- */
+
+/* =show, =hide
+    default show/hide function
+ ---------------------------------------------- */
+lp.show = function(obj, callback){
+	if(callback) obj.show(lp.get_effect_speed(), callback);
+	else obj.show(lp.get_effect_speed());
 };
-lp.hide = function(obj){
-	obj.hide(lp.get_effect_speed());
+lp.hide = function(obj, callback){
+	if(callback) obj.hide(lp.get_effect_speed(), callback);
+	else obj.hide(lp.get_effect_speed());
+};
+
+/* =slide_title
+    default making title function
+ ---------------------------------------------- */
+lp.slide_title = function(title){
+	var fc = title.substr(0, 1);
+	var rest = title.substr(1);
+	var h2 = lp.common.elem("h2");
+	h2.append(lp.common.elem("span", {text: fc}).css("font-size", "150%"));
+	h2.append(lp.common.elem("span", {text: rest}));
+	return h2;
+};
+
+/* =slide_page
+    default making page function
+ ---------------------------------------------- */
+lp.slide_page = function(page){
+	return lp.common.p(page);
+};
+
+/* =toggle_slide
+    default toggling slide function
+ ---------------------------------------------- */
+lp.toggle_slide = function(from, to){
+	lp.hide(from, function(){
+		lp.show(to);
+	});
 };
 
 /* =Slide Class
@@ -83,12 +129,12 @@ lp.Slide.prototype = {
 	},
 	
 	to_s: function(){
-		var box = lp.common.elem("div");
-		var main = lp.common.elem("div");
-		box.attr("id", lp.id.slide.substr(1) + this.page);
-		box.addClass(lp.class.slide[0]);
-		main.addClass(lp.class.slide[1]);
-		main.append(lp.common.elem("h2").text(this.title));
+		var box = lp.common.elem("div", {
+			id: lp.id.slide.substr(1) + this.page,
+			class: lp.class.slide[0]
+		});
+		var main = lp.common.elem("div", {class: lp.class.slide[1]});
+		main.append(lp.slide_title(this.title));
 
 		jQuery.each(this.body, function(){
 			main.append(this);
@@ -96,13 +142,13 @@ lp.Slide.prototype = {
 
 		box.append(main);
 		var link = lp.common.elem("p");
-		link.append(lp.common.elem("a").attr("href", "http://github.com/liquidz/lp/tree/master").text("powered by lp"));
+		link.append(lp.common.elem("a", {
+			href: "http://github.com/liquidz/lp/tree/master",
+			text: "powered by lp"
+		}));
 		link.css("float", "left");
 
-		var pager = lp.common.elem("p");
-		pager.addClass(lp.class.pager);
-		pager.text(this.page);
-		pager.css("float", "right");
+		var pager = lp.slide_page(this.page).addClass(lp.class.pager).css("float", "right");
 
 		var clearer = lp.common.elem("div");
 		clearer.css("clear", "both");
@@ -173,7 +219,7 @@ lp.Table.prototype = {
 			th = true;
 		}
 		for(var i = 0; i < objs.length; ++i){
-			tr.append(lp.common.elem((th ? "th" : "td")).text(objs[i]));
+			tr.append(lp.common.elem((th ? "th" : "td"), {text: objs[i]}));
 		}
 		this.body.append(tr);
 	}
@@ -236,7 +282,7 @@ lp.parse_contents = function(cont){
 					lists[i] = null;
 				}
 			}
-			lists[level].add(lp.common.elem("li").text(text));
+			lists[level].add(lp.common.elem("li", {text: text}));
 			last_level = level;
 			str = jQuery.trim(rest);
 
@@ -261,7 +307,6 @@ lp.parse_contents = function(cont){
 
 			str = jQuery.trim(rest);
 
-
 			// $
 			if(str == "") page.add(table.finish());
 		} else if(str.match(/^\[\[([\s\S]+?)\]\](\n|$)/)){
@@ -277,7 +322,7 @@ lp.parse_contents = function(cont){
 
 			var tt = text.replace(/\</g, "&lt;").replace(/\>/g, "&gt;");
 
-			page.add(lp.common.elem("div").addClass("code").append(lp.common.elem("code").addClass("prettyprint").html(jQuery.trim(tt))));
+			page.add(lp.common.elem("div", {class: "code"}).append(lp.common.elem("code", {class: "prettyprint", html: jQuery.trim(tt)})));
 			str = jQuery.trim(rest);
 		} else if(str.match(/^#ref\((.+?)\)/)){
 			// image
@@ -290,7 +335,7 @@ lp.parse_contents = function(cont){
 			var text = RegExp.$1;
 			var rest = RegExp.rightContext;
 
-			page.add(lp.common.elem("img").attr("src", text));
+			page.add(lp.common.elem("img", {src: text}));
 
 			str = jQuery.trim(rest);
 		} else if(str.match(/^\%(.+?)(\n|$)/)){
@@ -328,14 +373,7 @@ lp.parse_contents = function(cont){
 /* =get_effect_speed
  ---------------------------------------------- */
 lp.get_effect_speed = function(){
-	return (lp.options["nowait"]) ? 0 : 500;
-};
-
-/* =toggle_slide
- ---------------------------------------------- */
-lp.toggle_slide = function(from, to){
-	lp.hide($(lp.id.slide + from));
-	lp.show($(lp.id.slide + to));
+	return (lp.options["nowait"]) ? 0 : lp.effect_speed;
 };
 
 /* =next
@@ -345,7 +383,7 @@ lp.next = function(){
 		var last = lp.current_slide;
 		if(lp.current_slide < lp.slide.length - 1) ++lp.current_slide;
 		else lp.current_slide = 0;
-		lp.toggle_slide(last, lp.current_slide);
+		lp.toggle_slide($(lp.id.slide + last), $(lp.id.slide + lp.current_slide));
 	}
 };
 /* =prev
@@ -355,7 +393,7 @@ lp.prev = function(){
 		var last = lp.current_slide;
 		if(lp.current_slide > 0) --lp.current_slide;
 		else lp.current_slide = lp.slide.length - 1;
-		lp.toggle_slide(last, lp.current_slide);
+		lp.toggle_slide($(lp.id.slide + last), $(lp.id.slide + lp.current_slide));
 	}
 };
 
@@ -398,10 +436,10 @@ lp.table_of_contents = function(title){
 	if(tmp != "") toc.add(lp.common.p(tmp).addClass("center"));
 
 	// sections
-	toc.add(lp.common.elem("h3").text("Table of Contents"));
+	toc.add(lp.common.elem("h3", {text: "Table of Contents"}));
 	jQuery.each(lp.slide, function(){
 		if(!this.subsection)
-			list.add(lp.common.elem("li").text(this.title));
+			list.add(lp.common.elem("li", {text: this.title}));
 	});
 	toc.add(list.finish());
 
@@ -476,10 +514,18 @@ lp.key_control = function(e){
 		break;
 	}
 };
+
+/* =wheel_control
+ ---------------------------------------------- */
 lp.wheel_control = function(event, delta){
-	if(lp.mode == lp.mode_kind.slide){
+	if(lp.mode == lp.mode_kind.slide && !lp.wheel_flag){
+
+		event.stopPropagation();
+						event.preventDefault();
+
 		if(delta > 0) lp.next();
 		else lp.prev();
+		
 		return false;
 	}
 };
@@ -494,7 +540,8 @@ lp.initialize = function(){
 	var w = $(window);
 	w.bind("resize", lp.update_size);
 	w.bind("keypress", lp.key_control);
-	$("div." + lp.class.slide[0]).mousewheel(lp.wheel_control);
+	//$("div." + lp.class.slide[0]).mousewheel(lp.wheel_control);
+	$("body").mousewheel(lp.wheel_control);
 
 	// set options
 	var body = $("body");
@@ -503,6 +550,7 @@ lp.initialize = function(){
 		body.css("color", lp.options["fg"]);
 		$("table tr th, table tr td").css("border", "1px solid " + lp.options["fg"]);
 	}
+	if(lp.options["effect_speed"]) lp.effect_speed = parseInt(lp.options["effect_speed"]);
 };
 
 /* =main
