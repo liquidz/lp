@@ -31,13 +31,7 @@ lp.common = {
 	}
 };
 
-lp.key = {
-	up: 38,
-	down: 40,
-	right: 39,
-	left: 37,
-	home: 36
-};
+lp.key = { up: 38, down: 40, right: 39, left: 37, home: 36 };
 
 lp.class = {
 	slide: ["slide", "main"],
@@ -61,7 +55,14 @@ lp.style = {
 			margin: "1%"
 		}
 	}
-}
+};
+
+lp.show = function(obj){
+	obj.show(lp.get_effect_speed());
+};
+lp.hide = function(obj){
+	obj.hide(lp.get_effect_speed());
+};
 
 /* =Slide Class
  ---------------------------------------------- */
@@ -112,7 +113,6 @@ lp.Slide.prototype = {
 		box.append(pager);
 		box.append(clearer);
 
-		//box.append(lp.common.p(this.page).addClass(lp.class.pager));
 		return box;
 	}
 };
@@ -120,7 +120,7 @@ lp.Slide.prototype = {
 /* =List Class
  ---------------------------------------------- */
 lp.List = function(){
-	this.active_flag = false;
+	this.active = false;
 	this.body = null;
 	this.is_sub_list = false;
 };
@@ -129,8 +129,8 @@ lp.List.prototype = {
 		this.is_sub_list = bool;
 	},
 	finish: function(){
-		if(this.active_flag){
-			this.active_flag = false;
+		if(this.active){
+			this.active = false;
 
 			var tmp = this.body;
 			this.body = null;
@@ -139,14 +139,43 @@ lp.List.prototype = {
 		return null;
 	},
 	add: function(obj){
-		if(!this.active_flag){
+		if(!this.active){
 			this.body = lp.common.elem("ul");
-			this.active_flag = true;
+			this.active = true;
 		}
 		this.body.append(obj);
+	}
+};
+
+/* =Table Class
+ ---------------------------------------------- */
+lp.Table = function(){
+	this.active = false;
+	this.body = null;
+};
+lp.Table.prototype = {
+	finish: function(){
+		if(this.active){
+			this.active = false;
+			var tmp = this.body;
+			this.body = null;
+			return tmp;
+		}
+		return null;
 	},
-	is_active: function(){
-		return this.active_flag;
+	add: function(objs){
+		var tr = lp.common.elem("tr");
+		var th = false;
+
+		if(!this.active){
+			this.body = lp.common.elem("table");
+			this.active = true;
+			th = true;
+		}
+		for(var i = 0; i < objs.length; ++i){
+			tr.append(lp.common.elem((th ? "th" : "td")).text(objs[i]));
+		}
+		this.body.append(tr);
 	}
 };
 
@@ -162,6 +191,8 @@ lp.parse_contents = function(cont){
 	var last_level = 0;
 	lists[0] = new lp.List();
 
+	var table = new lp.Table();
+
 	var close_lists = function(){
 		for(var i = last_level; i > 0; --i){
 			lists[i-1].add(lists[i].finish());
@@ -176,8 +207,11 @@ lp.parse_contents = function(cont){
 		if(str.match(/^(\=+)\s*(.+?)(\n|$)/)){
 			// header
 
-			/* リストを作成中だったら閉じる */
-			if(lists[last_level].is_active()) close_lists();
+			// リストを作成中だったら閉じる
+			if(lists[last_level].active) close_lists();
+			// 表を作成中だったら閉じる
+			if(table.active) page.add(table.finish());
+
 
 			if(page != null) result.push(page);
 
@@ -214,21 +248,44 @@ lp.parse_contents = function(cont){
 				}
 				page.add(lists[0].finish());
 			}
-		} else if(str.match(/^\[\[([\s\S]+?)\]\](\n|$)/)){
-			// code
+		} else if(str.match(/^\|(.+?)\|(\n|$)/)){
+			// table
 
-			/* リストを作成中だったら閉じる */
-			if(lists[last_level].is_active()) close_lists();
+			// リストを作成中だったら閉じる
+			if(lists[last_level].active) close_lists();
 
 			var text = RegExp.$1;
 			var rest = RegExp.rightContext;
-			page.add(lp.common.elem("div").addClass("code").append(lp.common.elem("code").addClass("prettyprint").text(jQuery.trim(text))));
+
+			table.add(text.split("|"));
+
+			str = jQuery.trim(rest);
+
+
+			// $
+			if(str == "") page.add(table.finish());
+		} else if(str.match(/^\[\[([\s\S]+?)\]\](\n|$)/)){
+			// code
+
+			// リストを作成中だったら閉じる
+			if(lists[last_level].active) close_lists();
+			// 表を作成中だったら閉じる
+			if(table.active) page.add(table.finish());
+
+			var text = RegExp.$1;
+			var rest = RegExp.rightContext;
+
+			var tt = text.replace(/\</g, "&lt;").replace(/\>/g, "&gt;");
+
+			page.add(lp.common.elem("div").addClass("code").append(lp.common.elem("code").addClass("prettyprint").html(jQuery.trim(tt))));
 			str = jQuery.trim(rest);
 		} else if(str.match(/^#ref\((.+?)\)/)){
 			// image
 
-			/* リストを作成中だったら閉じる */
-			if(lists[last_level].is_active()) close_lists();
+			// リストを作成中だったら閉じる
+			if(lists[last_level].active) close_lists();
+			// 表を作成中だったら閉じる
+			if(table.active) page.add(table.finish());
 
 			var text = RegExp.$1;
 			var rest = RegExp.rightContext;
@@ -247,8 +304,10 @@ lp.parse_contents = function(cont){
 		} else {
 			// p
 
-			/* リストを作成中だったら閉じる */
-			if(lists[last_level].is_active()) close_lists();
+			// リストを作成中だったら閉じる
+			if(lists[last_level].active) close_lists();
+			// 表を作成中だったら閉じる
+			if(table.active) page.add(table.finish());
 
 			if(str.match(/(.+?)\n/)){
 				var text = RegExp.$1;
@@ -275,8 +334,8 @@ lp.get_effect_speed = function(){
 /* =toggle_slide
  ---------------------------------------------- */
 lp.toggle_slide = function(from, to){
-	$(lp.id.slide + from).hide(lp.get_effect_speed());
-	$(lp.id.slide + to).show(lp.get_effect_speed());
+	lp.hide($(lp.id.slide + from));
+	lp.show($(lp.id.slide + to));
 };
 
 /* =next
@@ -318,6 +377,7 @@ lp.update_size = function(){
 	font_size = (font_size > ss.height() / 12) ? ss.height() / 12 : font_size;
 	$("h2").css("font-size", font_size + "px");
 	$("body").css("font-size", font_size * 2 / 5 + "px");
+	$("table tr th, table tr td").css("font-size", font_size * 2 / 5 + "px");
 	$("code").css("font-size", font_size / 3 + "px");
 	$("p." + lp.class.pager).css("font-size", font_size / 3 + "px");
 };
@@ -356,7 +416,7 @@ lp.change_to_slide_mode = function(){
 		slides.css(key, lp.style.slide.slide_mode[key]);
 	}
 	slides.hide();
-	$(lp.id.slide + lp.current_slide).show(lp.get_effect_speed());
+	lp.show($(lp.id.slide + lp.current_slide));
 	$("img").show();
 
 	slides.unbind("click", lp.select_slide);
@@ -416,6 +476,13 @@ lp.key_control = function(e){
 		break;
 	}
 };
+lp.wheel_control = function(event, delta){
+	if(lp.mode == lp.mode_kind.slide){
+		if(delta > 0) lp.next();
+		else lp.prev();
+		return false;
+	}
+};
 
 /* =initialize
  ---------------------------------------------- */
@@ -426,13 +493,16 @@ lp.initialize = function(){
 	// add events
 	var w = $(window);
 	w.bind("resize", lp.update_size);
-
 	w.bind("keypress", lp.key_control);
+	$("div." + lp.class.slide[0]).mousewheel(lp.wheel_control);
 
 	// set options
 	var body = $("body");
 	if(lp.options["bg"]) body.css("background", lp.options["bg"]);
-	if(lp.options["fg"]) body.css("color", lp.options["fg"]);
+	if(lp.options["fg"]){
+		body.css("color", lp.options["fg"]);
+		$("table tr th, table tr td").css("border", "1px solid " + lp.options["fg"]);
+	}
 };
 
 /* =main
@@ -440,7 +510,7 @@ lp.initialize = function(){
 $(function(){
 	var title = $("head title").text();
 	var body = $("body");
-	var contents = jQuery.trim($("body pre").text());
+	var contents = jQuery.trim($("body pre").html());
 
 	/* clear body */
 	body.text("");

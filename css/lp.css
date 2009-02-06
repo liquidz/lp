@@ -32,6 +32,7 @@ div.slide div.main h2 {
 div.slide div.main h3,
 div.slide div.main p,
 div.slide div.main ul,
+div.slide div.main table,
 div.slide div.main div.code {
 	margin-left: 5%;
 }
@@ -59,6 +60,15 @@ div.slide div.main div.code {
 	margin-right: 5%;
 	border: 1px solid #aaa;
 }
+
+div.slide div.main table {
+	border-collapse: collapse;
+}
+div.slide div.main table tr th,
+div.slide div.main table tr td {
+	border: 1px solid #000;
+}
+
 
 
 .center {
