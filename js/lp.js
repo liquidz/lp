@@ -15,39 +15,13 @@ var lp = {};
 lp.slide = [];
 lp.current_slide = 0;
 lp.options = {};
+lp.optag = { fg: "fg", bg: "bg", effect_speed: "effect_speed" };
 lp.mode_kind = {
 	slide: 0,
 	view_all: 1
 };
 lp.mode = lp.mode_kind.slide;  // プレゼンの表示モード(slide, all_view)
 lp.is_toggling = false;        // スライドを切り替え中かどうかを扱うフラグ
-
-lp.common = {
-	elem: function(tag, op){
-		var e = jQuery(document.createElement(tag));
-		if(op){
-			for(var key in arguments[1]){
-				if(key == "class") e.addClass(arguments[1][key]);
-				else if(key == "text") e.text(arguments[1][key]);
-				else if(key == "html") e.html(arguments[1][key]);
-				else e.attr(key, arguments[1][key]);
-			}
-		}
-		return e;
-	},
-
-	p: function(text){
-		return this.elem("p", {text: text});
-	},
-
-	clearer: function(){
-		var clearer = lp.common.elem("div");
-		clearer.css("clear", "both");
-		clearer.css("height", "0");
-		clearer.css("font-size", "0");
-		return clearer;
-	}
-};
 
 lp.effect_speed = 250;
 lp.key = { up: 38, down: 40, right: 39, left: 37, home: 36 };
@@ -72,8 +46,53 @@ lp.style = {
 			margin: "1%"
 		}
 	}
-
 };
+
+// =common {{{
+lp.common = {
+	elem: function(tag, op){
+		var e = jQuery(document.createElement(tag));
+		if(op){
+			for(var key in arguments[1]){
+				if(key == "class") e.addClass(arguments[1][key]);
+				else if(key == "text") e.text(arguments[1][key]);
+				else if(key == "html") e.html(arguments[1][key]);
+				else e.attr(key, arguments[1][key]);
+			}
+		}
+		return e;
+	},
+
+	p: function(text){
+		return this.elem("p", {text: text});
+	},
+
+	clearer: function(){
+		var clearer = lp.common.elem("div");
+		clearer.css("clear", "both");
+		clearer.css("height", "0");
+		clearer.css("font-size", "0");
+		return clearer;
+	},
+
+	get_option_value: function(tag){
+		return (lp.options[tag]) ? lp.options[tag] : null;
+	},
+
+	set_bg: function(fn){
+		var bg = lp.common.get_option_value(lp.optag.bg);
+		if(bg) fn(bg);
+	},
+	set_fg: function(fn){
+		var fg = lp.common.get_option_value(lp.optag.fg);
+		if(fg) fn(fg);
+	},
+
+	update_effect_speed: function(){
+		var es = lp.common.get_option_value(lp.optag.effect_speed);
+		if(es) lp.effect_speed = parseInt(es);
+	}
+}; // }}}
 
 /* ----------- customable functions ----------- */
 
@@ -108,7 +127,7 @@ lp.slide_page_num = function(page){
 	return lp.common.p(page);
 };
 
-/* =Slide Class
+/* =Slide Class {{{
  ---------------------------------------------- */
 lp.Slide = function(title, page){
 	this.title = title;
@@ -154,9 +173,9 @@ lp.Slide.prototype = {
 
 		return box;
 	}
-};
+}; // }}}
 
-/* =List Class
+/* =List Class {{{
  ---------------------------------------------- */
 lp.List = function(){
 	this.active = false;
@@ -184,9 +203,9 @@ lp.List.prototype = {
 		}
 		this.body.append(obj);
 	}
-};
+}; // }}}
 
-/* =Table Class
+/* =Table Class {{{
  ---------------------------------------------- */
 lp.Table = function(){
 	this.active = false;
@@ -216,9 +235,9 @@ lp.Table.prototype = {
 		}
 		this.body.append(tr);
 	}
-};
+}; // }}}
 
-/* =parse_contents
+/* =parse_contents {{{
  ---------------------------------------------- */
 lp.parse_contents = function(cont){
 	var list = new lp.List();
@@ -358,10 +377,10 @@ lp.parse_contents = function(cont){
 			}
 		}
 	}
-	result.push(page);
+	if(page != null) result.push(page);
 
 	return result;
-};
+}; // }}}
 
 /* =get_effect_speed
  ---------------------------------------------- */
@@ -454,7 +473,7 @@ lp.table_of_contents = function(title){
 	return toc;
 };
 
-/* =change_to_slide_mode
+/* =change_to_slide_mode {{{
  ---------------------------------------------- */
 lp.change_to_slide_mode = function(){
 	var slides = $("div." + lp.class.slide[0]);
@@ -469,9 +488,9 @@ lp.change_to_slide_mode = function(){
 
 	lp.mode = lp.mode_kind.slide;
 	lp.update_size();
-};
+}; // }}}
 
-/* =change_to_view_all_mode
+/* =change_to_view_all_mode {{{
  ---------------------------------------------- */
 lp.change_to_view_all_mode = function(){
 	var slides = $("div." + lp.class.slide[0]);
@@ -487,16 +506,16 @@ lp.change_to_view_all_mode = function(){
 
 	lp.mode = lp.mode_kind.view_all;
 	lp.update_size();
-};
+}; // }}}
 
-/* =select_slide
+/* =select_slide {{{
  ---------------------------------------------- */
 lp.select_slide = function(e){
 	lp.current_slide = parseInt(e.currentTarget.id.substr(lp.id.slide.length - 1));
 	lp.change_to_slide_mode();
-};
+}; // }}}
 
-/* =key_control
+/* =key_control {{{
  ---------------------------------------------- */
 lp.key_control = function(e){
 	switch(e.keyCode){
@@ -521,9 +540,9 @@ lp.key_control = function(e){
 	default:
 		break;
 	}
-};
+}; // }}}
 
-/* =wheel_control
+/* =wheel_control {{{
  ---------------------------------------------- */
 lp.wheel_control = function(event, delta){
 	if(lp.mode == lp.mode_kind.slide && !lp.wheel_flag){
@@ -536,7 +555,7 @@ lp.wheel_control = function(event, delta){
 		
 		return false;
 	}
-};
+}; // }}}
 
 /* =initialize
  ---------------------------------------------- */
@@ -553,12 +572,15 @@ lp.initialize = function(){
 
 	// set options
 	var body = $("body");
-	if(lp.options["bg"]) body.css("background", lp.options["bg"]);
-	if(lp.options["fg"]){
-		body.css("color", lp.options["fg"]);
-		$("table tr th, table tr td").css("border", "1px solid " + lp.options["fg"]);
-	}
-	if(lp.options["effect_speed"]) lp.effect_speed = parseInt(lp.options["effect_speed"]);
+	lp.common.set_bg(function(bg){ body.css("background", bg) });
+	lp.common.set_fg(function(fg){
+		body.css("color", fg);
+		$("table tr th, table tr td").css("border", "1px solid " + fg);
+	});
+
+	lp.common.update_effect_speed();
+
+	//if(lp.options["effect_speed"]) lp.effect_speed = parseInt(lp.options["effect_speed"]);
 };
 
 /* =main
