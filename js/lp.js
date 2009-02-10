@@ -1,11 +1,11 @@
 /* ================================================
 
-	Lazy Presentation v0.04
+	Lazy Presentation
 
 	Copyright (C) 2009 Masashi Iizuka
 	Dual licensed under the MIT and GPL licenses
 
-	Last update: 2009-02-05
+	Last update: 2009-02-10
 
    ================================================ */
 
@@ -19,7 +19,8 @@ lp.mode_kind = {
 	slide: 0,
 	view_all: 1
 };
-lp.mode = lp.mode_kind.slide;
+lp.mode = lp.mode_kind.slide;  // プレゼンの表示モード(slide, all_view)
+lp.is_toggling = false;        // スライドを切り替え中かどうかを扱うフラグ
 
 lp.common = {
 	elem: function(tag, op){
@@ -37,11 +38,18 @@ lp.common = {
 
 	p: function(text){
 		return this.elem("p", {text: text});
+	},
+
+	clearer: function(){
+		var clearer = lp.common.elem("div");
+		clearer.css("clear", "both");
+		clearer.css("height", "0");
+		clearer.css("font-size", "0");
+		return clearer;
 	}
 };
 
-lp.effect_speed = 500;
-
+lp.effect_speed = 250;
 lp.key = { up: 38, down: 40, right: 39, left: 37, home: 36 };
 
 lp.class = {
@@ -49,9 +57,7 @@ lp.class = {
 	pager: "pager",
 	sublist: "sublist"
 };
-lp.id = {
-	slide: "#slide"
-};
+lp.id = { slide: "#slide" };
 
 lp.style = {
 	slide: {
@@ -66,6 +72,7 @@ lp.style = {
 			margin: "1%"
 		}
 	}
+
 };
 
 /* ----------- customable functions ----------- */
@@ -74,12 +81,12 @@ lp.style = {
     default show/hide function
  ---------------------------------------------- */
 lp.show = function(obj, callback){
-	if(callback) obj.show(lp.get_effect_speed(), callback);
-	else obj.show(lp.get_effect_speed());
+	if(callback) obj.fadeIn(lp.get_effect_speed(), callback);
+	else obj.fadeIn(lp.get_effect_speed());
 };
 lp.hide = function(obj, callback){
-	if(callback) obj.hide(lp.get_effect_speed(), callback);
-	else obj.hide(lp.get_effect_speed());
+	if(callback) obj.fadeOut(lp.get_effect_speed(), callback);
+	else obj.fadeOut(lp.get_effect_speed());
 };
 
 /* =slide_title
@@ -99,15 +106,6 @@ lp.slide_title = function(title){
  ---------------------------------------------- */
 lp.slide_page = function(page){
 	return lp.common.p(page);
-};
-
-/* =toggle_slide
-    default toggling slide function
- ---------------------------------------------- */
-lp.toggle_slide = function(from, to){
-	lp.hide(from, function(){
-		lp.show(to);
-	});
 };
 
 /* =Slide Class
@@ -150,14 +148,9 @@ lp.Slide.prototype = {
 
 		var pager = lp.slide_page(this.page).addClass(lp.class.pager).css("float", "right");
 
-		var clearer = lp.common.elem("div");
-		clearer.css("clear", "both");
-		clearer.css("height", "0");
-		clearer.css("font-size", "0");
-
 		box.append(link);
 		box.append(pager);
-		box.append(clearer);
+		box.append(lp.common.clearer());
 
 		return box;
 	}
@@ -376,10 +369,25 @@ lp.get_effect_speed = function(){
 	return (lp.options["nowait"]) ? 0 : lp.effect_speed;
 };
 
+/* =toggle_slide
+ ---------------------------------------------- */
+lp.toggle_slide = function(from, to){
+	// start
+	if(lp.is_toggling) return;
+
+	lp.is_toggling = true;
+	lp.hide(from, function(){
+		lp.show(to, function(){
+			// end
+			lp.is_toggling = false;
+		});
+	});
+};
+
 /* =next
  ---------------------------------------------- */
 lp.next = function(){
-	if(lp.mode == lp.mode_kind.slide){
+	if(lp.mode == lp.mode_kind.slide && !lp.is_toggling){
 		var last = lp.current_slide;
 		if(lp.current_slide < lp.slide.length - 1) ++lp.current_slide;
 		else lp.current_slide = 0;
@@ -389,7 +397,7 @@ lp.next = function(){
 /* =prev
  ---------------------------------------------- */
 lp.prev = function(){
-	if(lp.mode == lp.mode_kind.slide){
+	if(lp.mode == lp.mode_kind.slide && !lp.is_toggling){
 		var last = lp.current_slide;
 		if(lp.current_slide > 0) --lp.current_slide;
 		else lp.current_slide = lp.slide.length - 1;
