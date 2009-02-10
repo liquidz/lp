@@ -101,10 +101,10 @@ lp.slide_title = function(title){
 	return h2;
 };
 
-/* =slide_page
+/* =slide_page_num
     default making page function
  ---------------------------------------------- */
-lp.slide_page = function(page){
+lp.slide_page_num = function(page){
 	return lp.common.p(page);
 };
 
@@ -146,7 +146,7 @@ lp.Slide.prototype = {
 		}));
 		link.css("float", "left");
 
-		var pager = lp.slide_page(this.page).addClass(lp.class.pager).css("float", "right");
+		var pager = lp.slide_page_num(this.page).addClass(lp.class.pager).css("float", "right");
 
 		box.append(link);
 		box.append(pager);
