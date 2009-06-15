@@ -1,13 +1,13 @@
-/* ================================================
-
-	Lazy Presentation
-
-	Copyright (C) 2009 Masashi Iizuka
-	Dual licensed under the MIT and GPL licenses
-
-	Last update: 2009-02-10
-
-   ================================================ */
+// ================================================
+//
+//	Lazy Presentation
+//
+//	Copyright (C) 2009 Masashi Iizuka
+//	Dual licensed under the MIT and GPL licenses
+//
+//	Last update: 2009-06-15
+//
+// ================================================
 
 if(typeof window.lp != 'undefined') delete window.lp;
 
@@ -94,11 +94,11 @@ lp.common = {
 	}
 }; // }}}
 
-/* ----------- customable functions ----------- */
+// ----------- customable functions -----------
 
-/* =show, =hide
-    default show/hide function
- ---------------------------------------------- */
+// =show, =hide
+//    default show/hide function
+// ----------------------------------------------
 lp.show = function(obj, callback){
 	if(callback) obj.fadeIn(lp.get_effect_speed(), callback);
 	else obj.fadeIn(lp.get_effect_speed());
@@ -108,9 +108,9 @@ lp.hide = function(obj, callback){
 	else obj.fadeOut(lp.get_effect_speed());
 };
 
-/* =slide_title
-    default making title function
- ---------------------------------------------- */
+// =slide_title
+//    default making title function
+// ----------------------------------------------
 lp.slide_title = function(title){
 	var fc = title.substr(0, 1);
 	var rest = title.substr(1);
@@ -120,20 +120,34 @@ lp.slide_title = function(title){
 	return h2;
 };
 
-/* =slide_page_num
-    default making page function
- ---------------------------------------------- */
+lp.slide_takahashi = function(title){
+	//var h2 = lp.common.elem("div", {text: title, class: "takahashi"});
+	//h2.append(lp.common.elem("p", {text: title, class: "takahashi"}));
+	var h4 = lp.common.elem("h4", {text: title, class: "takahashi"});
+	return h4;
+};
+
+// =slide_page_num
+//    default making page function
+// ----------------------------------------------
 lp.slide_page_num = function(page){
 	return lp.common.p(page);
 };
 
-/* =Slide Class {{{
- ---------------------------------------------- */
-lp.Slide = function(title, page){
+// =Slide Class {{{
+// ----------------------------------------------
+lp.Slide = function(title, page, options){
 	this.title = title;
 	this.page = page;
 	this.body = new Array();
 	this.subsection = false;
+
+	// methods
+	this.takahashi = false;
+
+	if(options){
+		if(options.takahashi) this.takahashi = options.takahashi;
+	}
 };
 lp.Slide.prototype = {
 	add: function(obj){
@@ -151,7 +165,12 @@ lp.Slide.prototype = {
 			class: lp.class.slide[0]
 		});
 		var main = lp.common.elem("div", {class: lp.class.slide[1]});
-		main.append(lp.slide_title(this.title));
+
+		if(this.takahashi){
+			main.append(lp.slide_takahashi(this.title));
+		} else {
+			main.append(lp.slide_title(this.title));
+		}
 
 		jQuery.each(this.body, function(){
 			main.append(this);
@@ -175,8 +194,8 @@ lp.Slide.prototype = {
 	}
 }; // }}}
 
-/* =List Class {{{
- ---------------------------------------------- */
+// =List Class {{{
+// ----------------------------------------------
 lp.List = function(){
 	this.active = false;
 	this.body = null;
@@ -205,8 +224,8 @@ lp.List.prototype = {
 	}
 }; // }}}
 
-/* =Table Class {{{
- ---------------------------------------------- */
+// =Table Class {{{
+// ----------------------------------------------
 lp.Table = function(){
 	this.active = false;
 	this.body = null;
@@ -237,8 +256,8 @@ lp.Table.prototype = {
 	}
 }; // }}}
 
-/* =parse_contents {{{
- ---------------------------------------------- */
+// =parse_contents {{{
+// ----------------------------------------------
 lp.parse_contents = function(cont){
 	var list = new lp.List();
 	var page = null;
@@ -275,10 +294,25 @@ lp.parse_contents = function(cont){
 
 			var level = RegExp.$1.length;
 			var title = RegExp.$2;
-			var rest = RegExp.rightContext
+			var rest = RegExp.rightContext;
 			page = new lp.Slide(title, page_count++);
 			if(level > 1) page.set_subsection(true);
 			str = jQuery.trim(rest);
+		} else if(str.match(/^\!\=\s*(.+?)(\n|$)/)){
+			// header only
+
+			// リストを作成中だったら閉じる
+			if(lists[last_level].active) close_lists();
+			// 表を作成中だったら閉じる
+			if(table.active) page.add(table.finish());
+
+			if(page != null) result.push(page);
+			var title = RegExp.$1;
+			var rest = RegExp.rightContext;
+			page = new lp.Slide(title, page_count++, {takahashi: true});
+			page.set_subsection(true);
+			str = jQuery.trim(rest);
+
 		} else if(str.match(/^(\*+)\s*(.+?)(\n|$)/)){
 			// list
 			var level = RegExp.$1.length - 1;
@@ -321,7 +355,7 @@ lp.parse_contents = function(cont){
 
 			// $
 			if(str == "") page.add(table.finish());
-		} else if(str.match(/^\[\[([\s\S]+?)\]\](\n|$)/)){
+		} else if(str.match(/^\{\{\{([\s\S]+?)\}\}\}(\n|$)/)){
 			// code
 
 			// リストを作成中だったら閉じる
@@ -382,14 +416,14 @@ lp.parse_contents = function(cont){
 	return result;
 }; // }}}
 
-/* =get_effect_speed
- ---------------------------------------------- */
+// =get_effect_speed
+// ----------------------------------------------
 lp.get_effect_speed = function(){
 	return (lp.options["nowait"]) ? 0 : lp.effect_speed;
 };
 
-/* =toggle_slide
- ---------------------------------------------- */
+// =toggle_slide
+// ----------------------------------------------
 lp.toggle_slide = function(from, to){
 	// start
 	if(lp.is_toggling) return;
@@ -403,29 +437,34 @@ lp.toggle_slide = function(from, to){
 	});
 };
 
-/* =next
- ---------------------------------------------- */
+// =next
+// ----------------------------------------------
 lp.next = function(){
 	if(lp.mode == lp.mode_kind.slide && !lp.is_toggling){
 		var last = lp.current_slide;
-		if(lp.current_slide < lp.slide.length - 1) ++lp.current_slide;
-		else lp.current_slide = 0;
-		lp.toggle_slide($(lp.id.slide + last), $(lp.id.slide + lp.current_slide));
+		if(lp.current_slide < lp.slide.length - 1){
+			++lp.current_slide;
+			lp.toggle_slide($(lp.id.slide + last), $(lp.id.slide + lp.current_slide));
+		} else {
+			// 一覧に戻る
+			lp.change_to_view_all_mode();
+		}
 	}
 };
-/* =prev
- ---------------------------------------------- */
+// =prev
+// ----------------------------------------------
 lp.prev = function(){
 	if(lp.mode == lp.mode_kind.slide && !lp.is_toggling){
 		var last = lp.current_slide;
-		if(lp.current_slide > 0) --lp.current_slide;
-		else lp.current_slide = lp.slide.length - 1;
-		lp.toggle_slide($(lp.id.slide + last), $(lp.id.slide + lp.current_slide));
+		if(lp.current_slide > 0){
+			--lp.current_slide;
+			lp.toggle_slide($(lp.id.slide + last), $(lp.id.slide + lp.current_slide));
+		}
 	}
 };
 
-/* =update_size
- ---------------------------------------------- */
+// =update_size
+// ----------------------------------------------
 lp.update_size = function(){
 	if(lp.mode == lp.mode_kind.view_all){
 		var w = $("body").width();
@@ -447,8 +486,8 @@ lp.update_size = function(){
 	$("p." + lp.class.pager).css("font-size", font_size / 3 + "px");
 };
 
-/* =table_of_contents
- ---------------------------------------------- */
+// =table_of_contents
+// ----------------------------------------------
 lp.table_of_contents = function(title){
 	var toc = new lp.Slide(title, 0);
 	var list = new lp.List();
@@ -473,8 +512,8 @@ lp.table_of_contents = function(title){
 	return toc;
 };
 
-/* =change_to_slide_mode {{{
- ---------------------------------------------- */
+// =change_to_slide_mode {{{
+// ----------------------------------------------
 lp.change_to_slide_mode = function(){
 	var slides = $("div." + lp.class.slide[0]);
 	for(var key in lp.style.slide.slide_mode){
@@ -490,8 +529,8 @@ lp.change_to_slide_mode = function(){
 	lp.update_size();
 }; // }}}
 
-/* =change_to_view_all_mode {{{
- ---------------------------------------------- */
+// =change_to_view_all_mode {{{
+// ----------------------------------------------
 lp.change_to_view_all_mode = function(){
 	var slides = $("div." + lp.class.slide[0]);
 	for(var key in lp.style.slide.view_all_mode){
@@ -508,15 +547,15 @@ lp.change_to_view_all_mode = function(){
 	lp.update_size();
 }; // }}}
 
-/* =select_slide {{{
- ---------------------------------------------- */
+// =select_slide {{{
+// ----------------------------------------------
 lp.select_slide = function(e){
 	lp.current_slide = parseInt(e.currentTarget.id.substr(lp.id.slide.length - 1));
 	lp.change_to_slide_mode();
 }; // }}}
 
-/* =key_control {{{
- ---------------------------------------------- */
+// =key_control {{{
+// ----------------------------------------------
 lp.key_control = function(e){
 	switch(e.keyCode){
 	case lp.key.right:
@@ -542,23 +581,23 @@ lp.key_control = function(e){
 	}
 }; // }}}
 
-/* =wheel_control {{{
- ---------------------------------------------- */
+// =wheel_control {{{
+// ----------------------------------------------
 lp.wheel_control = function(event, delta){
 	if(lp.mode == lp.mode_kind.slide && !lp.wheel_flag){
 
 		event.stopPropagation();
-						event.preventDefault();
+		event.preventDefault();
 
-		if(delta > 0) lp.next();
-		else lp.prev();
-		
+		if(delta > 0) lp.prev();
+		else lp.next();
+
 		return false;
 	}
 }; // }}}
 
-/* =initialize
- ---------------------------------------------- */
+// =initialize
+// ----------------------------------------------
 lp.initialize = function(){
 	// change font size
 	lp.update_size();
@@ -574,43 +613,43 @@ lp.initialize = function(){
 	var body = $("body");
 	lp.common.set_bg(function(bg){ body.css("background", bg) });
 	lp.common.set_fg(function(fg){
-		body.css("color", fg);
-		$("table tr th, table tr td").css("border", "1px solid " + fg);
-	});
+			body.css("color", fg);
+			$("table tr th, table tr td").css("border", "1px solid " + fg);
+			});
 
 	lp.common.update_effect_speed();
 
 	//if(lp.options["effect_speed"]) lp.effect_speed = parseInt(lp.options["effect_speed"]);
 };
 
-/* =main
- ---------------------------------------------- */
+// =main
+// ----------------------------------------------
 $(function(){
-	var title = $("head title").text();
-	var body = $("body");
-	var contents = jQuery.trim($("body pre").html());
+		var title = $("head title").text();
+		var body = $("body");
+		var contents = jQuery.trim($("body pre").html());
 
-	/* clear body */
-	body.text("");
+		// clear body
+		body.text("");
 
-	/* parse body text */
-	lp.slide = lp.parse_contents(contents);
+		// parse body text
+		lp.slide = lp.parse_contents(contents);
 
-	lp.slide.unshift(lp.table_of_contents(title));
+		lp.slide.unshift(lp.table_of_contents(title));
 
-	/* add table of contents(page = 0) */
-	//body.append(lp.table_of_contents(title));
+		// add table of contents(page = 0)
+		//body.append(lp.table_of_contents(title));
 
-	/* add each slides(page = 1 - lp.slide.length)*/
-	jQuery.each(lp.slide, function(){
-		body.append(this.to_s());
-		if(this.page != 0)
+		// add each slides(page = 1 - lp.slide.length)
+		jQuery.each(lp.slide, function(){
+			body.append(this.to_s());
+			if(this.page != 0)
 			$(lp.id.slide + this.page).hide();
-	});
+			});
 
-	/* initialize */
-	lp.initialize();
-	
-	prettyPrint();
+		// initialize
+		lp.initialize();
+
+		prettyPrint();
 });
 

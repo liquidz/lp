@@ -33,7 +33,8 @@ div.slide div.main h3,
 div.slide div.main p,
 div.slide div.main ul,
 div.slide div.main table,
-div.slide div.main div.code {
+div.slide div.main div.code,
+div.slide div.main img {
 	margin-left: 5%;
 }
 div.slide div.main ul {
@@ -70,6 +71,13 @@ div.slide div.main table tr td {
 }
 
 
+/* takahashi method */
+div.slide div.main h4.takahashi {
+	text-align: center;
+	margin: 20% auto;
+	font-size: 400%;
+	width: 95%;
+}
 
 .center {
 	text-align: center;
