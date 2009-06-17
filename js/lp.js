@@ -9,39 +9,39 @@
 //
 // ================================================
 
-if(typeof window.lp != 'undefined') delete window.lp;
+if(typeof window.LP != 'undefined') delete window.LP;
 
-var lp = {};
-lp.slide = [];
-lp.current_slide = 0;
-lp.options = {};
-lp.optag = { fg: "fg", bg: "bg", effect_speed: "effect_speed" };
-lp.mode_kind = {
+LP = {};
+LP.slide = [];
+LP.currentSlide = 0;
+LP.options = {};
+LP.optag = { fg: "fg", bg: "bg", effectSpeed: "effectSpeed" };
+LP.modeKind = {
 	slide: 0,
-	view_all: 1
+	viewAll: 1
 };
-lp.mode = lp.mode_kind.slide;  // プレゼンの表示モード(slide, all_view)
-lp.is_toggling = false;        // スライドを切り替え中かどうかを扱うフラグ
+LP.mode = LP.modeKind.slide;  // プレゼンの表示モード(slide, allView)
+LP.isToggling = false;        // スライドを切り替え中かどうかを扱うフラグ
 
-lp.effect_speed = 250;
-lp.key = { up: 38, down: 40, right: 39, left: 37, home: 36 };
+LP.effectSpeed = 250;
+LP.key = { up: 38, down: 40, right: 39, left: 37, home: 36 };
 
-lp.class = {
+LP.class = {
 	slide: ["slide", "main"],
 	pager: "pager",
 	sublist: "sublist"
 };
-lp.id = { slide: "#slide" };
+LP.id = { slide: "#slide" };
 
-lp.style = {
+LP.style = {
 	slide: {
-		slide_mode : {
+		slideMode : {
 			width: "94%",
 			height: "94%",
 			margin: "1% auto 0 auto",
 			float: "none"
 		},
-		view_all_mode: {
+		viewAllMode: {
 			float: "left",
 			margin: "1%"
 		}
@@ -49,7 +49,7 @@ lp.style = {
 };
 
 // =common {{{
-lp.common = {
+LP.common = {
 	elem: function(tag, op){
 		var e = jQuery(document.createElement(tag));
 		if(op){
@@ -68,29 +68,29 @@ lp.common = {
 	},
 
 	clearer: function(){
-		var clearer = lp.common.elem("div");
+		var clearer = LP.common.elem("div");
 		clearer.css("clear", "both");
 		clearer.css("height", "0");
 		clearer.css("font-size", "0");
 		return clearer;
 	},
 
-	get_option_value: function(tag){
-		return (lp.options[tag]) ? lp.options[tag] : null;
+	getOptionValue: function(tag){
+		return (LP.options[tag]) ? LP.options[tag] : null;
 	},
 
-	set_bg: function(fn){
-		var bg = lp.common.get_option_value(lp.optag.bg);
+	setBg: function(fn){
+		var bg = LP.common.getOptionValue(LP.optag.bg);
 		if(bg) fn(bg);
 	},
-	set_fg: function(fn){
-		var fg = lp.common.get_option_value(lp.optag.fg);
+	setFg: function(fn){
+		var fg = LP.common.getOptionValue(LP.optag.fg);
 		if(fg) fn(fg);
 	},
 
-	update_effect_speed: function(){
-		var es = lp.common.get_option_value(lp.optag.effect_speed);
-		if(es) lp.effect_speed = parseInt(es);
+	updateEffectSpeed: function(){
+		var es = LP.common.getOptionValue(LP.optag.effectSpeed);
+		if(es) LP.effectSpeed = parseInt(es);
 	}
 }; // }}}
 
@@ -99,44 +99,44 @@ lp.common = {
 // =show, =hide
 //    default show/hide function
 // ----------------------------------------------
-lp.show = function(obj, callback){
-	if(callback) obj.fadeIn(lp.get_effect_speed(), callback);
-	else obj.fadeIn(lp.get_effect_speed());
+LP.show = function(obj, callback){
+	if(callback) obj.fadeIn(LP.getEffectSpeed(), callback);
+	else obj.fadeIn(LP.getEffectSpeed());
 };
-lp.hide = function(obj, callback){
-	if(callback) obj.fadeOut(lp.get_effect_speed(), callback);
-	else obj.fadeOut(lp.get_effect_speed());
+LP.hide = function(obj, callback){
+	if(callback) obj.fadeOut(LP.getEffectSpeed(), callback);
+	else obj.fadeOut(LP.getEffectSpeed());
 };
 
-// =slide_title
+// =slideTitle
 //    default making title function
 // ----------------------------------------------
-lp.slide_title = function(title){
+LP.slideTitle = function(title){
 	var fc = title.substr(0, 1);
 	var rest = title.substr(1);
-	var h2 = lp.common.elem("h2");
-	h2.append(lp.common.elem("span", {text: fc}).css("font-size", "150%"));
-	h2.append(lp.common.elem("span", {text: rest}));
+	var h2 = LP.common.elem("h2");
+	h2.append(LP.common.elem("span", {text: fc}).css("font-size", "150%"));
+	h2.append(LP.common.elem("span", {text: rest}));
 	return h2;
 };
 
-lp.slide_takahashi = function(title){
-	//var h2 = lp.common.elem("div", {text: title, class: "takahashi"});
-	//h2.append(lp.common.elem("p", {text: title, class: "takahashi"}));
-	var h4 = lp.common.elem("h4", {text: title, class: "takahashi"});
+LP.slideTakahashi = function(title){
+	//var h2 = LP.common.elem("div", {text: title, class: "takahashi"});
+	//h2.append(LP.common.elem("p", {text: title, class: "takahashi"}));
+	var h4 = LP.common.elem("h4", {text: title, class: "takahashi"});
 	return h4;
 };
 
-// =slide_page_num
+// =slidePageNum
 //    default making page function
 // ----------------------------------------------
-lp.slide_page_num = function(page){
-	return lp.common.p(page);
+LP.slidePageNum = function(page){
+	return LP.common.p(page);
 };
 
 // =Slide Class {{{
 // ----------------------------------------------
-lp.Slide = function(title, page, options){
+LP.Slide = function(title, page, options){
 	this.title = title;
 	this.page = page;
 	this.body = new Array();
@@ -149,27 +149,28 @@ lp.Slide = function(title, page, options){
 		if(options.takahashi) this.takahashi = options.takahashi;
 	}
 };
-lp.Slide.prototype = {
+LP.Slide.prototype = {
 	add: function(obj){
 		this.body.push(obj);
 		return this;
 	},
 
-	set_subsection: function(bool){
+	setSubsection: function(bool){
 		this.subsection = bool;
 	},
 	
-	to_s: function(){
-		var box = lp.common.elem("div", {
-			id: lp.id.slide.substr(1) + this.page,
-			class: lp.class.slide[0]
+	toString: function(){
+		/*
+		var box = LP.common.elem("div", {
+			id: LP.id.slide.substr(1) + this.page,
+			class: LP.class.slide[0]
 		});
-		var main = lp.common.elem("div", {class: lp.class.slide[1]});
+		var main = LP.common.elem("div", {class: LP.class.slide[1]});
 
 		if(this.takahashi){
-			main.append(lp.slide_takahashi(this.title));
+			main.append(LP.slideTakahashi(this.title));
 		} else {
-			main.append(lp.slide_title(this.title));
+			main.append(LP.slideTitle(this.title));
 		}
 
 		jQuery.each(this.body, function(){
@@ -177,18 +178,58 @@ lp.Slide.prototype = {
 		});
 
 		box.append(main);
-		var link = lp.common.elem("p");
-		link.append(lp.common.elem("a", {
+		var link = LP.common.elem("p");
+		link.append(LP.common.elem("a", {
 			href: "http://github.com/liquidz/lp/tree/master",
 			text: "powered by lp"
 		}));
 		link.css("float", "left");
 
-		var pager = lp.slide_page_num(this.page).addClass(lp.class.pager).css("float", "right");
+		var pager = LP.slidePageNum(this.page).addClass(LP.class.pager).css("float", "right");
 
 		box.append(link);
 		box.append(pager);
-		box.append(lp.common.clearer());
+		box.append(LP.common.clearer());
+		return box;
+		*/
+
+		var box = LP.common.elem("div", {
+			id: LP.id.slide.substr(1) + this.page,
+			class: "slide softbox"
+		});
+
+		var head = null, body = null, foot = null;
+		var link = LP.common.elem("div", { class: "cell left" });
+		var page = LP.common.elem("div", { class: "cell" });
+
+		if(this.takahashi){
+			box.addClass("col-3");
+			head = LP.common.elem("div", { class: "cell"});
+			body = LP.common.elem("div", { class: "cell main center"});
+			foot = LP.common.elem("div", { class: "cell span-2"});
+
+			body.append(LP.common.elem("h4", { text: this.title, class: "takahashi" }));
+		} else {
+			box.addClass("col-10");
+			head = LP.common.elem("div", { class: "cell-2 center" });
+			body = LP.common.elem("div", { class: "cell-7 main" });
+			foot = LP.common.elem("div", { class: "cell-1 span-2" });
+
+			head.append(LP.slideTitle(this.title));
+			jQuery.each(this.body, function(){
+				body.append(this);
+			});
+
+		}
+
+		link.append(LP.common.elem("p", { class: "bottom" }).append(LP.common.elem("a", {
+			href: "http://github.com/liquidz/lp/tree/master",
+			text: "powered by lp"
+		})));
+		page.append(LP.slidePageNum(this.page).addClass(LP.class.pager + " bottom right"));
+
+		foot.append(link).append(page);
+		box.append(head).append(body).append(foot);
 
 		return box;
 	}
@@ -196,14 +237,14 @@ lp.Slide.prototype = {
 
 // =List Class {{{
 // ----------------------------------------------
-lp.List = function(){
+LP.List = function(){
 	this.active = false;
 	this.body = null;
-	this.is_sub_list = false;
+	this.isSubList = false;
 };
-lp.List.prototype = {
-	sub_list: function(bool){
-		this.is_sub_list = bool;
+LP.List.prototype = {
+	subList: function(bool){
+		this.isSubList = bool;
 	},
 	finish: function(){
 		if(this.active){
@@ -211,13 +252,13 @@ lp.List.prototype = {
 
 			var tmp = this.body;
 			this.body = null;
-			return (this.is_sub_list) ? tmp.addClass(lp.class.sublist) : tmp;
+			return (this.isSubList) ? tmp.addClass(LP.class.sublist) : tmp;
 		}
 		return null;
 	},
 	add: function(obj){
 		if(!this.active){
-			this.body = lp.common.elem("ul");
+			this.body = LP.common.elem("ul");
 			this.active = true;
 		}
 		this.body.append(obj);
@@ -226,11 +267,11 @@ lp.List.prototype = {
 
 // =Table Class {{{
 // ----------------------------------------------
-lp.Table = function(){
+LP.Table = function(){
 	this.active = false;
 	this.body = null;
 };
-lp.Table.prototype = {
+LP.Table.prototype = {
 	finish: function(){
 		if(this.active){
 			this.active = false;
@@ -241,42 +282,42 @@ lp.Table.prototype = {
 		return null;
 	},
 	add: function(objs){
-		var tr = lp.common.elem("tr");
+		var tr = LP.common.elem("tr");
 		var th = false;
 
 		if(!this.active){
-			this.body = lp.common.elem("table");
+			this.body = LP.common.elem("table");
 			this.active = true;
 			th = true;
 		}
 		for(var i = 0; i < objs.length; ++i){
-			tr.append(lp.common.elem((th ? "th" : "td"), {text: objs[i]}));
+			tr.append(LP.common.elem((th ? "th" : "td"), {text: objs[i]}));
 		}
 		this.body.append(tr);
 	}
 }; // }}}
 
-// =parse_contents {{{
+// =parseContents {{{
 // ----------------------------------------------
-lp.parse_contents = function(cont){
-	var list = new lp.List();
+LP.parseContents = function(cont){
+	var list = new LP.List();
 	var page = null;
 	var result = new Array();
-	var page_count = 1;
+	var pageCount = 1;
 
 	var lists = {};
-	var last_level = 0;
-	lists[0] = new lp.List();
+	var lastLevel = 0;
+	lists[0] = new LP.List();
 
-	var table = new lp.Table();
+	var table = new LP.Table();
 
-	var close_lists = function(){
-		for(var i = last_level; i > 0; --i){
+	var closeLists = function(){
+		for(var i = lastLevel; i > 0; --i){
 			lists[i-1].add(lists[i].finish());
 			lists[i] = null;
 		}
 		page.add(lists[0].finish());
-		last_level = 0;
+		lastLevel = 0;
 	};
 
 	var str = cont;
@@ -285,7 +326,7 @@ lp.parse_contents = function(cont){
 			// header
 
 			// リストを作成中だったら閉じる
-			if(lists[last_level].active) close_lists();
+			if(lists[lastLevel].active) closeLists();
 			// 表を作成中だったら閉じる
 			if(table.active) page.add(table.finish());
 
@@ -295,22 +336,22 @@ lp.parse_contents = function(cont){
 			var level = RegExp.$1.length;
 			var title = RegExp.$2;
 			var rest = RegExp.rightContext;
-			page = new lp.Slide(title, page_count++);
-			if(level > 1) page.set_subsection(true);
+			page = new LP.Slide(title, pageCount++);
+			if(level > 1) page.setSubsection(true);
 			str = jQuery.trim(rest);
 		} else if(str.match(/^\!\=\s*(.+?)(\n|$)/)){
 			// header only
 
 			// リストを作成中だったら閉じる
-			if(lists[last_level].active) close_lists();
+			if(lists[lastLevel].active) closeLists();
 			// 表を作成中だったら閉じる
 			if(table.active) page.add(table.finish());
 
 			if(page != null) result.push(page);
 			var title = RegExp.$1;
 			var rest = RegExp.rightContext;
-			page = new lp.Slide(title, page_count++, {takahashi: true});
-			page.set_subsection(true);
+			page = new LP.Slide(title, pageCount++, {takahashi: true});
+			page.setSubsection(true);
 			str = jQuery.trim(rest);
 
 		} else if(str.match(/^(\*+)\s*(.+?)(\n|$)/)){
@@ -319,22 +360,22 @@ lp.parse_contents = function(cont){
 			var text = RegExp.$2;
 			var rest = RegExp.rightContext;
 
-			if(level > last_level){
-				lists[level] = new lp.List();
-				if(level > 0) lists[level].sub_list(true);
-			} else if(level < last_level){
-				for(var i = last_level; i > level; --i){
+			if(level > lastLevel){
+				lists[level] = new LP.List();
+				if(level > 0) lists[level].subList(true);
+			} else if(level < lastLevel){
+				for(var i = lastLevel; i > level; --i){
 					lists[i - 1].add(lists[i].finish());
 					lists[i] = null;
 				}
 			}
-			lists[level].add(lp.common.elem("li", {text: text}));
-			last_level = level;
+			lists[level].add(LP.common.elem("li", {text: text}));
+			lastLevel = level;
 			str = jQuery.trim(rest);
 
 			// $
 			if(str == ""){
-				for(var i = last_level; i > 0; --i){
+				for(var i = lastLevel; i > 0; --i){
 					lists[i-1].add(lists[i].finish());
 					lists[i] = null;
 				}
@@ -344,7 +385,7 @@ lp.parse_contents = function(cont){
 			// table
 
 			// リストを作成中だったら閉じる
-			if(lists[last_level].active) close_lists();
+			if(lists[lastLevel].active) closeLists();
 
 			var text = RegExp.$1;
 			var rest = RegExp.rightContext;
@@ -359,7 +400,7 @@ lp.parse_contents = function(cont){
 			// code
 
 			// リストを作成中だったら閉じる
-			if(lists[last_level].active) close_lists();
+			if(lists[lastLevel].active) closeLists();
 			// 表を作成中だったら閉じる
 			if(table.active) page.add(table.finish());
 
@@ -368,20 +409,20 @@ lp.parse_contents = function(cont){
 
 			var tt = text.replace(/\</g, "&lt;").replace(/\>/g, "&gt;");
 
-			page.add(lp.common.elem("div", {class: "code"}).append(lp.common.elem("code", {class: "prettyprint", html: jQuery.trim(tt)})));
+			page.add(LP.common.elem("div", {class: "code"}).append(LP.common.elem("code", {class: "prettyprint", html: jQuery.trim(tt)})));
 			str = jQuery.trim(rest);
 		} else if(str.match(/^#ref\((.+?)\)/)){
 			// image
 
 			// リストを作成中だったら閉じる
-			if(lists[last_level].active) close_lists();
+			if(lists[lastLevel].active) closeLists();
 			// 表を作成中だったら閉じる
 			if(table.active) page.add(table.finish());
 
 			var text = RegExp.$1;
 			var rest = RegExp.rightContext;
 
-			page.add(lp.common.elem("img", {src: text}));
+			page.add(LP.common.elem("img", {src: text}));
 
 			str = jQuery.trim(rest);
 		} else if(str.match(/^\%(.+?)(\n|$)/)){
@@ -390,23 +431,23 @@ lp.parse_contents = function(cont){
 			var rest = RegExp.rightContext;
 
 			var val = text.split("=");
-			if(val.length == 2) lp.options[jQuery.trim(val[0])] = jQuery.trim(val[1]);
+			if(val.length == 2) LP.options[jQuery.trim(val[0])] = jQuery.trim(val[1]);
 			str = jQuery.trim(rest);
 		} else {
 			// p
 
 			// リストを作成中だったら閉じる
-			if(lists[last_level].active) close_lists();
+			if(lists[lastLevel].active) closeLists();
 			// 表を作成中だったら閉じる
 			if(table.active) page.add(table.finish());
 
 			if(str.match(/(.+?)\n/)){
 				var text = RegExp.$1;
 				var rest = RegExp.rightContext;
-				page.add(lp.common.p(text));
+				page.add(LP.common.p(text));
 				str = jQuery.trim(rest);
 			} else {
-				page.add(lp.common.p(str));
+				page.add(LP.common.p(str));
 				str = "";
 			}
 		}
@@ -416,163 +457,163 @@ lp.parse_contents = function(cont){
 	return result;
 }; // }}}
 
-// =get_effect_speed
+// =getEffectSpeed
 // ----------------------------------------------
-lp.get_effect_speed = function(){
-	return (lp.options["nowait"]) ? 0 : lp.effect_speed;
+LP.getEffectSpeed = function(){
+	return (LP.options["nowait"]) ? 0 : LP.effectSpeed;
 };
 
-// =toggle_slide
+// =toggleSlide
 // ----------------------------------------------
-lp.toggle_slide = function(from, to){
+LP.toggleSlide = function(from, to){
 	// start
-	if(lp.is_toggling) return;
+	if(LP.isToggling) return;
 
-	lp.is_toggling = true;
-	lp.hide(from, function(){
-		lp.show(to, function(){
+	LP.isToggling = true;
+	LP.hide(from, function(){
+		LP.show(to, function(){
 			// end
-			lp.is_toggling = false;
+			LP.isToggling = false;
 		});
 	});
 };
 
 // =next
 // ----------------------------------------------
-lp.next = function(){
-	if(lp.mode == lp.mode_kind.slide && !lp.is_toggling){
-		var last = lp.current_slide;
-		if(lp.current_slide < lp.slide.length - 1){
-			++lp.current_slide;
-			lp.toggle_slide($(lp.id.slide + last), $(lp.id.slide + lp.current_slide));
+LP.next = function(){
+	if(LP.mode == LP.modeKind.slide && !LP.isToggling){
+		var last = LP.currentSlide;
+		if(LP.currentSlide < LP.slide.length - 1){
+			++LP.currentSlide;
+			LP.toggleSlide($(LP.id.slide + last), $(LP.id.slide + LP.currentSlide));
 		} else {
 			// 一覧に戻る
-			lp.change_to_view_all_mode();
+			LP.changeToViewAllMode();
 		}
 	}
 };
 // =prev
 // ----------------------------------------------
-lp.prev = function(){
-	if(lp.mode == lp.mode_kind.slide && !lp.is_toggling){
-		var last = lp.current_slide;
-		if(lp.current_slide > 0){
-			--lp.current_slide;
-			lp.toggle_slide($(lp.id.slide + last), $(lp.id.slide + lp.current_slide));
+LP.prev = function(){
+	if(LP.mode == LP.modeKind.slide && !LP.isToggling){
+		var last = LP.currentSlide;
+		if(LP.currentSlide > 0){
+			--LP.currentSlide;
+			LP.toggleSlide($(LP.id.slide + last), $(LP.id.slide + LP.currentSlide));
 		}
 	}
 };
 
-// =update_size
+// =updateSize
 // ----------------------------------------------
-lp.update_size = function(){
-	if(lp.mode == lp.mode_kind.view_all){
+LP.updateSize = function(){
+	if(LP.mode == LP.modeKind.viewAll){
 		var w = $("body").width();
-		var s = $("div." + lp.class.slide[0]);
+		var s = $("div." + LP.class.slide[0]);
 		s.width(w * 14 / 64);
 		s.height(s.width() * 2 / 3);
 	}
 
 	// スライド一覧からTOCを選ぶと何故かフォントサイズがちゃんと変更されないので
 	// TOCを表示する場合には違うスライドを選ぶ
-	var ss = $(lp.id.slide + ((lp.current_slide == 0) ? "1" : "0"));
-	var title = $(lp.id.slide + "0 div." + lp.class.slide[1] + " h2")
-	var font_size = (ss.width() * 3 / 5) / ((title.text().length > 10) ? title.text().length / 2 : title.text().length);
-	font_size = (font_size > ss.height() / 12) ? ss.height() / 12 : font_size;
-	$("h2").css("font-size", font_size + "px");
-	$("body").css("font-size", font_size * 2 / 5 + "px");
-	$("table tr th, table tr td").css("font-size", font_size * 2 / 5 + "px");
-	$("code").css("font-size", font_size / 3 + "px");
-	$("p." + lp.class.pager).css("font-size", font_size / 3 + "px");
+	var ss = $(LP.id.slide + ((LP.currentSlide == 0) ? "1" : "0"));
+	var title = $(LP.id.slide + "0 div." + LP.class.slide[1] + " h2")
+	var fontSize = (ss.width() * 3 / 5) / ((title.text().length > 10) ? title.text().length / 2 : title.text().length);
+	fontSize = (fontSize > ss.height() / 12) ? ss.height() / 12 : fontSize;
+	$("h2").css("font-size", fontSize + "px");
+	$("body").css("font-size", fontSize * 2 / 5 + "px");
+	$("table tr th, table tr td").css("font-size", fontSize * 2 / 5 + "px");
+	$("code").css("font-size", fontSize / 3 + "px");
+	$("p." + LP.class.pager).css("font-size", fontSize / 3 + "px");
 };
 
-// =table_of_contents
+// =tableOfContents
 // ----------------------------------------------
-lp.table_of_contents = function(title){
-	var toc = new lp.Slide(title, 0);
-	var list = new lp.List();
+LP.tableOfContents = function(title){
+	var toc = new LP.Slide(title, 0);
+	var list = new LP.List();
 
 	// date
 	var date = "";
-	if(lp.options["date"]) date = lp.options["date"];
+	if(LP.options["date"]) date = LP.options["date"];
 	// author
 	var author = "";
-	if(lp.options["author"]) author = lp.options["author"];
+	if(LP.options["author"]) author = LP.options["author"];
 	var tmp = jQuery.trim(date + " " + author);
-	if(tmp != "") toc.add(lp.common.p(tmp).addClass("center"));
+	if(tmp != "") toc.add(LP.common.p(tmp).addClass("center"));
 
 	// sections
-	toc.add(lp.common.elem("h3", {text: "Table of Contents"}));
-	jQuery.each(lp.slide, function(){
+	toc.add(LP.common.elem("h3", {text: "Table of Contents"}));
+	jQuery.each(LP.slide, function(){
 		if(!this.subsection)
-			list.add(lp.common.elem("li", {text: this.title}));
+			list.add(LP.common.elem("li", {text: this.title}));
 	});
 	toc.add(list.finish());
 
 	return toc;
 };
 
-// =change_to_slide_mode {{{
+// =changeToSlideMode {{{
 // ----------------------------------------------
-lp.change_to_slide_mode = function(){
-	var slides = $("div." + lp.class.slide[0]);
-	for(var key in lp.style.slide.slide_mode){
-		slides.css(key, lp.style.slide.slide_mode[key]);
+LP.changeToSlideMode = function(){
+	var slides = $("div." + LP.class.slide[0]);
+	for(var key in LP.style.slide.slideMode){
+		slides.css(key, LP.style.slide.slideMode[key]);
 	}
 	slides.hide();
-	lp.show($(lp.id.slide + lp.current_slide));
+	LP.show($(LP.id.slide + LP.currentSlide));
 	$("img").show();
 
-	slides.unbind("click", lp.select_slide);
+	slides.unbind("click", LP.selectSlide);
 
-	lp.mode = lp.mode_kind.slide;
-	lp.update_size();
+	LP.mode = LP.modeKind.slide;
+	LP.updateSize();
 }; // }}}
 
-// =change_to_view_all_mode {{{
+// =changeToViewAllMode {{{
 // ----------------------------------------------
-lp.change_to_view_all_mode = function(){
-	var slides = $("div." + lp.class.slide[0]);
-	for(var key in lp.style.slide.view_all_mode){
-		slides.css(key, lp.style.slide.view_all_mode[key]);
+LP.changeToViewAllMode = function(){
+	var slides = $("div." + LP.class.slide[0]);
+	for(var key in LP.style.slide.viewAllMode){
+		slides.css(key, LP.style.slide.viewAllMode[key]);
 	}
 
 	slides.show();
 	// スライド一覧モードでは画像を表示しない
 	$("img").hide();
 
-	slides.bind("click", lp.select_slide);
+	slides.bind("click", LP.selectSlide);
 
-	lp.mode = lp.mode_kind.view_all;
-	lp.update_size();
+	LP.mode = LP.modeKind.viewAll;
+	LP.updateSize();
 }; // }}}
 
-// =select_slide {{{
+// =selectSlide {{{
 // ----------------------------------------------
-lp.select_slide = function(e){
-	lp.current_slide = parseInt(e.currentTarget.id.substr(lp.id.slide.length - 1));
-	lp.change_to_slide_mode();
+LP.selectSlide = function(e){
+	LP.currentSlide = parseInt(e.currentTarget.id.substr(LP.id.slide.length - 1));
+	LP.changeToSlideMode();
 }; // }}}
 
-// =key_control {{{
+// =keyControl {{{
 // ----------------------------------------------
-lp.key_control = function(e){
+LP.keyControl = function(e){
 	switch(e.keyCode){
-	case lp.key.right:
-	case lp.key.down:
-		lp.next();
+	case LP.key.right:
+	case LP.key.down:
+		LP.next();
 		break;
 
-	case lp.key.left:
-	case lp.key.up:
-		lp.prev();
+	case LP.key.left:
+	case LP.key.up:
+		LP.prev();
 		break;
 
-	case lp.key.home:
-		if(lp.mode == lp.mode_kind.slide){
-			lp.change_to_view_all_mode();
+	case LP.key.home:
+		if(LP.mode == LP.modeKind.slide){
+			LP.changeToViewAllMode();
 		} else {
-			lp.change_to_slide_mode();
+			LP.changeToSlideMode();
 		}
 		break;
 
@@ -581,16 +622,16 @@ lp.key_control = function(e){
 	}
 }; // }}}
 
-// =wheel_control {{{
+// =wheelControl {{{
 // ----------------------------------------------
-lp.wheel_control = function(event, delta){
-	if(lp.mode == lp.mode_kind.slide && !lp.wheel_flag){
+LP.wheelControl = function(event, delta){
+	if(LP.mode == LP.modeKind.slide && !LP.wheelFlag){
 
 		event.stopPropagation();
 		event.preventDefault();
 
-		if(delta > 0) lp.prev();
-		else lp.next();
+		if(delta > 0) LP.prev();
+		else LP.next();
 
 		return false;
 	}
@@ -598,28 +639,28 @@ lp.wheel_control = function(event, delta){
 
 // =initialize
 // ----------------------------------------------
-lp.initialize = function(){
+LP.initialize = function(){
 	// change font size
-	lp.update_size();
+	LP.updateSize();
 
 	// add events
 	var w = $(window);
-	w.bind("resize", lp.update_size);
-	w.bind("keypress", lp.key_control);
-	//$("div." + lp.class.slide[0]).mousewheel(lp.wheel_control);
-	$("body").mousewheel(lp.wheel_control);
+	w.bind("resize", LP.updateSize);
+	w.bind("keypress", LP.keyControl);
+	//$("div." + LP.class.slide[0]).mousewheel(LP.wheelControl);
+	$("body").mousewheel(LP.wheelControl);
 
 	// set options
 	var body = $("body");
-	lp.common.set_bg(function(bg){ body.css("background", bg) });
-	lp.common.set_fg(function(fg){
+	LP.common.setBg(function(bg){ body.css("background", bg) });
+	LP.common.setFg(function(fg){
 			body.css("color", fg);
 			$("table tr th, table tr td").css("border", "1px solid " + fg);
 			});
 
-	lp.common.update_effect_speed();
+	LP.common.updateEffectSpeed();
 
-	//if(lp.options["effect_speed"]) lp.effect_speed = parseInt(lp.options["effect_speed"]);
+	//if(LP.options["effectSpeed"]) LP.effectSpeed = parseInt(LP.options["effectSpeed"]);
 };
 
 // =main
@@ -633,22 +674,22 @@ $(function(){
 		body.text("");
 
 		// parse body text
-		lp.slide = lp.parse_contents(contents);
+		LP.slide = LP.parseContents(contents);
 
-		lp.slide.unshift(lp.table_of_contents(title));
+		LP.slide.unshift(LP.tableOfContents(title));
 
 		// add table of contents(page = 0)
-		//body.append(lp.table_of_contents(title));
+		//body.append(LP.tableOfContents(title));
 
-		// add each slides(page = 1 - lp.slide.length)
-		jQuery.each(lp.slide, function(){
-			body.append(this.to_s());
+		// add each slides(page = 1 - LP.slide.length)
+		jQuery.each(LP.slide, function(){
+			body.append(this.toString());
 			if(this.page != 0)
-			$(lp.id.slide + this.page).hide();
+			$(LP.id.slide + this.page).hide();
 			});
 
 		// initialize
-		lp.initialize();
+		LP.initialize();
 
 		prettyPrint();
 });

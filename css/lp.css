@@ -16,18 +16,12 @@ div.slide {
 
 	text-align: left;
 }
-div.slide div.main {
-	height: 95%;
-}
 div.slide .pager {
-	text-align: right;
 	font-weight: bold;
 }
 /* title */
 div.slide div.main h2 {
-	text-align: center;
 	font-size: 100%;
-	margin-bottom: 1em;
 }
 div.slide div.main h3,
 div.slide div.main p,
@@ -73,12 +67,7 @@ div.slide div.main table tr td {
 
 /* takahashi method */
 div.slide div.main h4.takahashi {
-	text-align: center;
-	margin: 20% auto;
 	font-size: 400%;
-	width: 95%;
 }
 
-.center {
-	text-align: center;
-}
+
