@@ -1,254 +1,337 @@
+@charset "UTF-8";
 /* 
- * Softbox CSS Framework 0.02
+ * Softbox CSS Framework 0.04
  *
  * Copyright(C) 2009 Masashi Iizuka
  * Dual licensed under the MIT and GPL licenses
  *
  * compile with rcss(http://gist.github.com/130588)
  * */
-body, div.softbox, div.softbox div, div.softbox p {
-	margin: 0;
-	padding: 0;
-}
-div.softbox {
-	position: relative;
-}
+div.softbox, div.softbox div, div.softbox p { margin: 0; padding: 0; }
+div.softbox { overflow: hidden; position: relative; }
 /* =cell {{{
  * -------------------------- */
-div.softbox div.cell {
-	width: 100%;
-	height: 100%;
-}
-div.softbox div.last:after {
-	content: "";
-	display: block;
-	clear: both;
-}
+div.softbox .cell, div.softbox .cell-last, div.softbox .cell-1, div.softbox .cell-1-last, div.softbox .cell-2, div.softbox .cell-2-last, div.softbox .cell-3, div.softbox .cell-3-last, div.softbox .cell-4, div.softbox .cell-4-last, div.softbox .cell-5, div.softbox .cell-5-last, div.softbox .cell-6, div.softbox .cell-6-last, div.softbox .cell-7, div.softbox .cell-7-last, div.softbox .cell-8, div.softbox .cell-8-last, div.softbox .cell-9, div.softbox .cell-9-last { width: 100%; height: 100%; }
 /* }}} */
 /* =span {{{ */
-div.span-1 div.cell { float:left; width: 100%; }
-div.span-2 div.cell { float:left; width: 50%; }
-div.span-2 div.cell-1 { float:left; width: 50%; }
-div.span-2 div.space-r1 { margin-right: 50%; }
-div.span-2 div.space-l1 { margin-left: 50%; }
-div.span-3 div.cell { float:left; width: 33%; }
-div.span-3 div.cell-1 { float:left; width: 33%; }
-div.span-3 div.space-r1 { margin-right: 33%; }
-div.span-3 div.space-l1 { margin-left: 33%; }
-div.span-3 div.cell-2 { float:left; width: 66%; }
-div.span-3 div.space-r2 { margin-right: 66%; }
-div.span-3 div.space-l2 { margin-left: 66%; }
-div.span-4 div.cell { float:left; width: 25%; }
-div.span-4 div.cell-1 { float:left; width: 25%; }
-div.span-4 div.space-r1 { margin-right: 25%; }
-div.span-4 div.space-l1 { margin-left: 25%; }
-div.span-4 div.cell-2 { float:left; width: 50%; }
-div.span-4 div.space-r2 { margin-right: 50%; }
-div.span-4 div.space-l2 { margin-left: 50%; }
-div.span-4 div.cell-3 { float:left; width: 75%; }
-div.span-4 div.space-r3 { margin-right: 75%; }
-div.span-4 div.space-l3 { margin-left: 75%; }
-div.span-5 div.cell { float:left; width: 20%; }
-div.span-5 div.cell-1 { float:left; width: 20%; }
-div.span-5 div.space-r1 { margin-right: 20%; }
-div.span-5 div.space-l1 { margin-left: 20%; }
-div.span-5 div.cell-2 { float:left; width: 40%; }
-div.span-5 div.space-r2 { margin-right: 40%; }
-div.span-5 div.space-l2 { margin-left: 40%; }
-div.span-5 div.cell-3 { float:left; width: 60%; }
-div.span-5 div.space-r3 { margin-right: 60%; }
-div.span-5 div.space-l3 { margin-left: 60%; }
-div.span-5 div.cell-4 { float:left; width: 80%; }
-div.span-5 div.space-r4 { margin-right: 80%; }
-div.span-5 div.space-l4 { margin-left: 80%; }
-div.span-6 div.cell { float:left; width: 16%; }
-div.span-6 div.cell-1 { float:left; width: 16%; }
-div.span-6 div.space-r1 { margin-right: 16%; }
-div.span-6 div.space-l1 { margin-left: 16%; }
-div.span-6 div.cell-2 { float:left; width: 33%; }
-div.span-6 div.space-r2 { margin-right: 33%; }
-div.span-6 div.space-l2 { margin-left: 33%; }
-div.span-6 div.cell-3 { float:left; width: 50%; }
-div.span-6 div.space-r3 { margin-right: 50%; }
-div.span-6 div.space-l3 { margin-left: 50%; }
-div.span-6 div.cell-4 { float:left; width: 66%; }
-div.span-6 div.space-r4 { margin-right: 66%; }
-div.span-6 div.space-l4 { margin-left: 66%; }
-div.span-6 div.cell-5 { float:left; width: 83%; }
-div.span-6 div.space-r5 { margin-right: 83%; }
-div.span-6 div.space-l5 { margin-left: 83%; }
-div.span-7 div.cell { float:left; width: 14%; }
-div.span-7 div.cell-1 { float:left; width: 14%; }
-div.span-7 div.space-r1 { margin-right: 14%; }
-div.span-7 div.space-l1 { margin-left: 14%; }
-div.span-7 div.cell-2 { float:left; width: 28%; }
-div.span-7 div.space-r2 { margin-right: 28%; }
-div.span-7 div.space-l2 { margin-left: 28%; }
-div.span-7 div.cell-3 { float:left; width: 42%; }
-div.span-7 div.space-r3 { margin-right: 42%; }
-div.span-7 div.space-l3 { margin-left: 42%; }
-div.span-7 div.cell-4 { float:left; width: 57%; }
-div.span-7 div.space-r4 { margin-right: 57%; }
-div.span-7 div.space-l4 { margin-left: 57%; }
-div.span-7 div.cell-5 { float:left; width: 71%; }
-div.span-7 div.space-r5 { margin-right: 71%; }
-div.span-7 div.space-l5 { margin-left: 71%; }
-div.span-7 div.cell-6 { float:left; width: 85%; }
-div.span-7 div.space-r6 { margin-right: 85%; }
-div.span-7 div.space-l6 { margin-left: 85%; }
-div.span-8 div.cell { float:left; width: 12%; }
-div.span-8 div.cell-1 { float:left; width: 12%; }
-div.span-8 div.space-r1 { margin-right: 12%; }
-div.span-8 div.space-l1 { margin-left: 12%; }
-div.span-8 div.cell-2 { float:left; width: 25%; }
-div.span-8 div.space-r2 { margin-right: 25%; }
-div.span-8 div.space-l2 { margin-left: 25%; }
-div.span-8 div.cell-3 { float:left; width: 37%; }
-div.span-8 div.space-r3 { margin-right: 37%; }
-div.span-8 div.space-l3 { margin-left: 37%; }
-div.span-8 div.cell-4 { float:left; width: 50%; }
-div.span-8 div.space-r4 { margin-right: 50%; }
-div.span-8 div.space-l4 { margin-left: 50%; }
-div.span-8 div.cell-5 { float:left; width: 62%; }
-div.span-8 div.space-r5 { margin-right: 62%; }
-div.span-8 div.space-l5 { margin-left: 62%; }
-div.span-8 div.cell-6 { float:left; width: 75%; }
-div.span-8 div.space-r6 { margin-right: 75%; }
-div.span-8 div.space-l6 { margin-left: 75%; }
-div.span-8 div.cell-7 { float:left; width: 87%; }
-div.span-8 div.space-r7 { margin-right: 87%; }
-div.span-8 div.space-l7 { margin-left: 87%; }
-div.span-9 div.cell { float:left; width: 11%; }
-div.span-9 div.cell-1 { float:left; width: 11%; }
-div.span-9 div.space-r1 { margin-right: 11%; }
-div.span-9 div.space-l1 { margin-left: 11%; }
-div.span-9 div.cell-2 { float:left; width: 22%; }
-div.span-9 div.space-r2 { margin-right: 22%; }
-div.span-9 div.space-l2 { margin-left: 22%; }
-div.span-9 div.cell-3 { float:left; width: 33%; }
-div.span-9 div.space-r3 { margin-right: 33%; }
-div.span-9 div.space-l3 { margin-left: 33%; }
-div.span-9 div.cell-4 { float:left; width: 44%; }
-div.span-9 div.space-r4 { margin-right: 44%; }
-div.span-9 div.space-l4 { margin-left: 44%; }
-div.span-9 div.cell-5 { float:left; width: 55%; }
-div.span-9 div.space-r5 { margin-right: 55%; }
-div.span-9 div.space-l5 { margin-left: 55%; }
-div.span-9 div.cell-6 { float:left; width: 66%; }
-div.span-9 div.space-r6 { margin-right: 66%; }
-div.span-9 div.space-l6 { margin-left: 66%; }
-div.span-9 div.cell-7 { float:left; width: 77%; }
-div.span-9 div.space-r7 { margin-right: 77%; }
-div.span-9 div.space-l7 { margin-left: 77%; }
-div.span-9 div.cell-8 { float:left; width: 88%; }
-div.span-9 div.space-r8 { margin-right: 88%; }
-div.span-9 div.space-l8 { margin-left: 88%; }
-div.span-10 div.cell { float:left; width: 10%; }
-div.span-10 div.cell-1 { float:left; width: 10%; }
-div.span-10 div.space-r1 { margin-right: 10%; }
-div.span-10 div.space-l1 { margin-left: 10%; }
-div.span-10 div.cell-2 { float:left; width: 20%; }
-div.span-10 div.space-r2 { margin-right: 20%; }
-div.span-10 div.space-l2 { margin-left: 20%; }
-div.span-10 div.cell-3 { float:left; width: 30%; }
-div.span-10 div.space-r3 { margin-right: 30%; }
-div.span-10 div.space-l3 { margin-left: 30%; }
-div.span-10 div.cell-4 { float:left; width: 40%; }
-div.span-10 div.space-r4 { margin-right: 40%; }
-div.span-10 div.space-l4 { margin-left: 40%; }
-div.span-10 div.cell-5 { float:left; width: 50%; }
-div.span-10 div.space-r5 { margin-right: 50%; }
-div.span-10 div.space-l5 { margin-left: 50%; }
-div.span-10 div.cell-6 { float:left; width: 60%; }
-div.span-10 div.space-r6 { margin-right: 60%; }
-div.span-10 div.space-l6 { margin-left: 60%; }
-div.span-10 div.cell-7 { float:left; width: 70%; }
-div.span-10 div.space-r7 { margin-right: 70%; }
-div.span-10 div.space-l7 { margin-left: 70%; }
-div.span-10 div.cell-8 { float:left; width: 80%; }
-div.span-10 div.space-r8 { margin-right: 80%; }
-div.span-10 div.space-l8 { margin-left: 80%; }
-div.span-10 div.cell-9 { float:left; width: 90%; }
-div.span-10 div.space-r9 { margin-right: 90%; }
-div.span-10 div.space-l9 { margin-left: 90%; }
+div.span-1 > div.cell { float:left; width: 100%; }
+div.span-1 > div.cell-last { float: left; width: 100%; }
+div.span-2 > div.cell { float:left; width: 50%; }
+div.span-2 > div.cell-last { float: left; width: 50%; }
+div.span-2 > div.cell-1 { float:left; width: 50%; }
+div.span-2 > div.cell-1-last { float: left; width: 50%; }
+div.span-2 > div.space-r1 { margin-right: 50%; }
+div.span-2 > div.space-l1 { margin-left: 50%; }
+div.span-3 > div.cell { float:left; width: 33%; }
+div.span-3 > div.cell-last { float: left; width: 34%; }
+div.span-3 > div.cell-1 { float:left; width: 33%; }
+div.span-3 > div.cell-1-last { float: left; width: 34%; }
+div.span-3 > div.space-r1 { margin-right: 33%; }
+div.span-3 > div.space-l1 { margin-left: 33%; }
+div.span-3 > div.cell-2 { float:left; width: 66%; }
+div.span-3 > div.cell-2-last { float: left; width: 67%; }
+div.span-3 > div.space-r2 { margin-right: 66%; }
+div.span-3 > div.space-l2 { margin-left: 66%; }
+div.span-4 > div.cell { float:left; width: 25%; }
+div.span-4 > div.cell-last { float: left; width: 25%; }
+div.span-4 > div.cell-1 { float:left; width: 25%; }
+div.span-4 > div.cell-1-last { float: left; width: 25%; }
+div.span-4 > div.space-r1 { margin-right: 25%; }
+div.span-4 > div.space-l1 { margin-left: 25%; }
+div.span-4 > div.cell-2 { float:left; width: 50%; }
+div.span-4 > div.cell-2-last { float: left; width: 50%; }
+div.span-4 > div.space-r2 { margin-right: 50%; }
+div.span-4 > div.space-l2 { margin-left: 50%; }
+div.span-4 > div.cell-3 { float:left; width: 75%; }
+div.span-4 > div.cell-3-last { float: left; width: 75%; }
+div.span-4 > div.space-r3 { margin-right: 75%; }
+div.span-4 > div.space-l3 { margin-left: 75%; }
+div.span-5 > div.cell { float:left; width: 20%; }
+div.span-5 > div.cell-last { float: left; width: 20%; }
+div.span-5 > div.cell-1 { float:left; width: 20%; }
+div.span-5 > div.cell-1-last { float: left; width: 20%; }
+div.span-5 > div.space-r1 { margin-right: 20%; }
+div.span-5 > div.space-l1 { margin-left: 20%; }
+div.span-5 > div.cell-2 { float:left; width: 40%; }
+div.span-5 > div.cell-2-last { float: left; width: 40%; }
+div.span-5 > div.space-r2 { margin-right: 40%; }
+div.span-5 > div.space-l2 { margin-left: 40%; }
+div.span-5 > div.cell-3 { float:left; width: 60%; }
+div.span-5 > div.cell-3-last { float: left; width: 60%; }
+div.span-5 > div.space-r3 { margin-right: 60%; }
+div.span-5 > div.space-l3 { margin-left: 60%; }
+div.span-5 > div.cell-4 { float:left; width: 80%; }
+div.span-5 > div.cell-4-last { float: left; width: 80%; }
+div.span-5 > div.space-r4 { margin-right: 80%; }
+div.span-5 > div.space-l4 { margin-left: 80%; }
+div.span-6 > div.cell { float:left; width: 16%; }
+div.span-6 > div.cell-last { float: left; width: 17%; }
+div.span-6 > div.cell-1 { float:left; width: 16%; }
+div.span-6 > div.cell-1-last { float: left; width: 17%; }
+div.span-6 > div.space-r1 { margin-right: 16%; }
+div.span-6 > div.space-l1 { margin-left: 16%; }
+div.span-6 > div.cell-2 { float:left; width: 33%; }
+div.span-6 > div.cell-2-last { float: left; width: 34%; }
+div.span-6 > div.space-r2 { margin-right: 33%; }
+div.span-6 > div.space-l2 { margin-left: 33%; }
+div.span-6 > div.cell-3 { float:left; width: 50%; }
+div.span-6 > div.cell-3-last { float: left; width: 50%; }
+div.span-6 > div.space-r3 { margin-right: 50%; }
+div.span-6 > div.space-l3 { margin-left: 50%; }
+div.span-6 > div.cell-4 { float:left; width: 66%; }
+div.span-6 > div.cell-4-last { float: left; width: 67%; }
+div.span-6 > div.space-r4 { margin-right: 66%; }
+div.span-6 > div.space-l4 { margin-left: 66%; }
+div.span-6 > div.cell-5 { float:left; width: 83%; }
+div.span-6 > div.cell-5-last { float: left; width: 84%; }
+div.span-6 > div.space-r5 { margin-right: 83%; }
+div.span-6 > div.space-l5 { margin-left: 83%; }
+div.span-7 > div.cell { float:left; width: 14%; }
+div.span-7 > div.cell-last { float: left; width: 15%; }
+div.span-7 > div.cell-1 { float:left; width: 14%; }
+div.span-7 > div.cell-1-last { float: left; width: 15%; }
+div.span-7 > div.space-r1 { margin-right: 14%; }
+div.span-7 > div.space-l1 { margin-left: 14%; }
+div.span-7 > div.cell-2 { float:left; width: 28%; }
+div.span-7 > div.cell-2-last { float: left; width: 29%; }
+div.span-7 > div.space-r2 { margin-right: 28%; }
+div.span-7 > div.space-l2 { margin-left: 28%; }
+div.span-7 > div.cell-3 { float:left; width: 42%; }
+div.span-7 > div.cell-3-last { float: left; width: 43%; }
+div.span-7 > div.space-r3 { margin-right: 42%; }
+div.span-7 > div.space-l3 { margin-left: 42%; }
+div.span-7 > div.cell-4 { float:left; width: 57%; }
+div.span-7 > div.cell-4-last { float: left; width: 58%; }
+div.span-7 > div.space-r4 { margin-right: 57%; }
+div.span-7 > div.space-l4 { margin-left: 57%; }
+div.span-7 > div.cell-5 { float:left; width: 71%; }
+div.span-7 > div.cell-5-last { float: left; width: 72%; }
+div.span-7 > div.space-r5 { margin-right: 71%; }
+div.span-7 > div.space-l5 { margin-left: 71%; }
+div.span-7 > div.cell-6 { float:left; width: 85%; }
+div.span-7 > div.cell-6-last { float: left; width: 86%; }
+div.span-7 > div.space-r6 { margin-right: 85%; }
+div.span-7 > div.space-l6 { margin-left: 85%; }
+div.span-8 > div.cell { float:left; width: 12%; }
+div.span-8 > div.cell-last { float: left; width: 13%; }
+div.span-8 > div.cell-1 { float:left; width: 12%; }
+div.span-8 > div.cell-1-last { float: left; width: 13%; }
+div.span-8 > div.space-r1 { margin-right: 12%; }
+div.span-8 > div.space-l1 { margin-left: 12%; }
+div.span-8 > div.cell-2 { float:left; width: 25%; }
+div.span-8 > div.cell-2-last { float: left; width: 25%; }
+div.span-8 > div.space-r2 { margin-right: 25%; }
+div.span-8 > div.space-l2 { margin-left: 25%; }
+div.span-8 > div.cell-3 { float:left; width: 37%; }
+div.span-8 > div.cell-3-last { float: left; width: 38%; }
+div.span-8 > div.space-r3 { margin-right: 37%; }
+div.span-8 > div.space-l3 { margin-left: 37%; }
+div.span-8 > div.cell-4 { float:left; width: 50%; }
+div.span-8 > div.cell-4-last { float: left; width: 50%; }
+div.span-8 > div.space-r4 { margin-right: 50%; }
+div.span-8 > div.space-l4 { margin-left: 50%; }
+div.span-8 > div.cell-5 { float:left; width: 62%; }
+div.span-8 > div.cell-5-last { float: left; width: 63%; }
+div.span-8 > div.space-r5 { margin-right: 62%; }
+div.span-8 > div.space-l5 { margin-left: 62%; }
+div.span-8 > div.cell-6 { float:left; width: 75%; }
+div.span-8 > div.cell-6-last { float: left; width: 75%; }
+div.span-8 > div.space-r6 { margin-right: 75%; }
+div.span-8 > div.space-l6 { margin-left: 75%; }
+div.span-8 > div.cell-7 { float:left; width: 87%; }
+div.span-8 > div.cell-7-last { float: left; width: 88%; }
+div.span-8 > div.space-r7 { margin-right: 87%; }
+div.span-8 > div.space-l7 { margin-left: 87%; }
+div.span-9 > div.cell { float:left; width: 11%; }
+div.span-9 > div.cell-last { float: left; width: 12%; }
+div.span-9 > div.cell-1 { float:left; width: 11%; }
+div.span-9 > div.cell-1-last { float: left; width: 12%; }
+div.span-9 > div.space-r1 { margin-right: 11%; }
+div.span-9 > div.space-l1 { margin-left: 11%; }
+div.span-9 > div.cell-2 { float:left; width: 22%; }
+div.span-9 > div.cell-2-last { float: left; width: 23%; }
+div.span-9 > div.space-r2 { margin-right: 22%; }
+div.span-9 > div.space-l2 { margin-left: 22%; }
+div.span-9 > div.cell-3 { float:left; width: 33%; }
+div.span-9 > div.cell-3-last { float: left; width: 34%; }
+div.span-9 > div.space-r3 { margin-right: 33%; }
+div.span-9 > div.space-l3 { margin-left: 33%; }
+div.span-9 > div.cell-4 { float:left; width: 44%; }
+div.span-9 > div.cell-4-last { float: left; width: 45%; }
+div.span-9 > div.space-r4 { margin-right: 44%; }
+div.span-9 > div.space-l4 { margin-left: 44%; }
+div.span-9 > div.cell-5 { float:left; width: 55%; }
+div.span-9 > div.cell-5-last { float: left; width: 56%; }
+div.span-9 > div.space-r5 { margin-right: 55%; }
+div.span-9 > div.space-l5 { margin-left: 55%; }
+div.span-9 > div.cell-6 { float:left; width: 66%; }
+div.span-9 > div.cell-6-last { float: left; width: 67%; }
+div.span-9 > div.space-r6 { margin-right: 66%; }
+div.span-9 > div.space-l6 { margin-left: 66%; }
+div.span-9 > div.cell-7 { float:left; width: 77%; }
+div.span-9 > div.cell-7-last { float: left; width: 78%; }
+div.span-9 > div.space-r7 { margin-right: 77%; }
+div.span-9 > div.space-l7 { margin-left: 77%; }
+div.span-9 > div.cell-8 { float:left; width: 88%; }
+div.span-9 > div.cell-8-last { float: left; width: 89%; }
+div.span-9 > div.space-r8 { margin-right: 88%; }
+div.span-9 > div.space-l8 { margin-left: 88%; }
+div.span-10 > div.cell { float:left; width: 10%; }
+div.span-10 > div.cell-last { float: left; width: 10%; }
+div.span-10 > div.cell-1 { float:left; width: 10%; }
+div.span-10 > div.cell-1-last { float: left; width: 10%; }
+div.span-10 > div.space-r1 { margin-right: 10%; }
+div.span-10 > div.space-l1 { margin-left: 10%; }
+div.span-10 > div.cell-2 { float:left; width: 20%; }
+div.span-10 > div.cell-2-last { float: left; width: 20%; }
+div.span-10 > div.space-r2 { margin-right: 20%; }
+div.span-10 > div.space-l2 { margin-left: 20%; }
+div.span-10 > div.cell-3 { float:left; width: 30%; }
+div.span-10 > div.cell-3-last { float: left; width: 30%; }
+div.span-10 > div.space-r3 { margin-right: 30%; }
+div.span-10 > div.space-l3 { margin-left: 30%; }
+div.span-10 > div.cell-4 { float:left; width: 40%; }
+div.span-10 > div.cell-4-last { float: left; width: 40%; }
+div.span-10 > div.space-r4 { margin-right: 40%; }
+div.span-10 > div.space-l4 { margin-left: 40%; }
+div.span-10 > div.cell-5 { float:left; width: 50%; }
+div.span-10 > div.cell-5-last { float: left; width: 50%; }
+div.span-10 > div.space-r5 { margin-right: 50%; }
+div.span-10 > div.space-l5 { margin-left: 50%; }
+div.span-10 > div.cell-6 { float:left; width: 60%; }
+div.span-10 > div.cell-6-last { float: left; width: 60%; }
+div.span-10 > div.space-r6 { margin-right: 60%; }
+div.span-10 > div.space-l6 { margin-left: 60%; }
+div.span-10 > div.cell-7 { float:left; width: 70%; }
+div.span-10 > div.cell-7-last { float: left; width: 70%; }
+div.span-10 > div.space-r7 { margin-right: 70%; }
+div.span-10 > div.space-l7 { margin-left: 70%; }
+div.span-10 > div.cell-8 { float:left; width: 80%; }
+div.span-10 > div.cell-8-last { float: left; width: 80%; }
+div.span-10 > div.space-r8 { margin-right: 80%; }
+div.span-10 > div.space-l8 { margin-left: 80%; }
+div.span-10 > div.cell-9 { float:left; width: 90%; }
+div.span-10 > div.cell-9-last { float: left; width: 90%; }
+div.span-10 > div.space-r9 { margin-right: 90%; }
+div.span-10 > div.space-l9 { margin-left: 90%; }
 /* }}} */
 /* =col {{{ */
-div.softbox div.col-1 { height: 100%; }
-div.col-1 div.cell { height: 100%; }
-div.softbox div.col-2 { height: 100%; }
-div.col-2 div.cell { height: 50%; }
-div.col-2 div.cell-1 { height: 50%; }
-div.softbox div.col-3 { height: 100%; }
-div.col-3 div.cell { height: 33%; }
-div.col-3 div.cell-1 { height: 33%; }
-div.col-3 div.cell-2 { height: 66%; }
-div.softbox div.col-4 { height: 100%; }
-div.col-4 div.cell { height: 25%; }
-div.col-4 div.cell-1 { height: 25%; }
-div.col-4 div.cell-2 { height: 50%; }
-div.col-4 div.cell-3 { height: 75%; }
-div.softbox div.col-5 { height: 100%; }
-div.col-5 div.cell { height: 20%; }
-div.col-5 div.cell-1 { height: 20%; }
-div.col-5 div.cell-2 { height: 40%; }
-div.col-5 div.cell-3 { height: 60%; }
-div.col-5 div.cell-4 { height: 80%; }
-div.softbox div.col-6 { height: 100%; }
-div.col-6 div.cell { height: 16%; }
-div.col-6 div.cell-1 { height: 16%; }
-div.col-6 div.cell-2 { height: 33%; }
-div.col-6 div.cell-3 { height: 50%; }
-div.col-6 div.cell-4 { height: 66%; }
-div.col-6 div.cell-5 { height: 83%; }
-div.softbox div.col-7 { height: 100%; }
-div.col-7 div.cell { height: 14%; }
-div.col-7 div.cell-1 { height: 14%; }
-div.col-7 div.cell-2 { height: 28%; }
-div.col-7 div.cell-3 { height: 42%; }
-div.col-7 div.cell-4 { height: 57%; }
-div.col-7 div.cell-5 { height: 71%; }
-div.col-7 div.cell-6 { height: 85%; }
-div.softbox div.col-8 { height: 100%; }
-div.col-8 div.cell { height: 12%; }
-div.col-8 div.cell-1 { height: 12%; }
-div.col-8 div.cell-2 { height: 25%; }
-div.col-8 div.cell-3 { height: 37%; }
-div.col-8 div.cell-4 { height: 50%; }
-div.col-8 div.cell-5 { height: 62%; }
-div.col-8 div.cell-6 { height: 75%; }
-div.col-8 div.cell-7 { height: 87%; }
-div.softbox div.col-9 { height: 100%; }
-div.col-9 div.cell { height: 11%; }
-div.col-9 div.cell-1 { height: 11%; }
-div.col-9 div.cell-2 { height: 22%; }
-div.col-9 div.cell-3 { height: 33%; }
-div.col-9 div.cell-4 { height: 44%; }
-div.col-9 div.cell-5 { height: 55%; }
-div.col-9 div.cell-6 { height: 66%; }
-div.col-9 div.cell-7 { height: 77%; }
-div.col-9 div.cell-8 { height: 88%; }
-div.softbox div.col-10 { height: 100%; }
-div.col-10 div.cell { height: 10%; }
-div.col-10 div.cell-1 { height: 10%; }
-div.col-10 div.cell-2 { height: 20%; }
-div.col-10 div.cell-3 { height: 30%; }
-div.col-10 div.cell-4 { height: 40%; }
-div.col-10 div.cell-5 { height: 50%; }
-div.col-10 div.cell-6 { height: 60%; }
-div.col-10 div.cell-7 { height: 70%; }
-div.col-10 div.cell-8 { height: 80%; }
-div.col-10 div.cell-9 { height: 90%; }
+div.col-1 > div.cell { height: 100%; }
+div.col-1 > div.cell-last { height: 100%; }
+div.col-2 > div.cell { height: 50%; }
+div.col-2 > div.cell-last { height: 50%; }
+div.col-2 > div.cell-1 { height: 50%; }
+div.col-2 > div.cell-1-last { height: 50%; }
+div.col-3 > div.cell { height: 33%; }
+div.col-3 > div.cell-last { height: 34%; }
+div.col-3 > div.cell-1 { height: 33%; }
+div.col-3 > div.cell-1-last { height: 34%; }
+div.col-3 > div.cell-2 { height: 66%; }
+div.col-3 > div.cell-2-last { height: 67%; }
+div.col-4 > div.cell { height: 25%; }
+div.col-4 > div.cell-last { height: 25%; }
+div.col-4 > div.cell-1 { height: 25%; }
+div.col-4 > div.cell-1-last { height: 25%; }
+div.col-4 > div.cell-2 { height: 50%; }
+div.col-4 > div.cell-2-last { height: 50%; }
+div.col-4 > div.cell-3 { height: 75%; }
+div.col-4 > div.cell-3-last { height: 75%; }
+div.col-5 > div.cell { height: 20%; }
+div.col-5 > div.cell-last { height: 20%; }
+div.col-5 > div.cell-1 { height: 20%; }
+div.col-5 > div.cell-1-last { height: 20%; }
+div.col-5 > div.cell-2 { height: 40%; }
+div.col-5 > div.cell-2-last { height: 40%; }
+div.col-5 > div.cell-3 { height: 60%; }
+div.col-5 > div.cell-3-last { height: 60%; }
+div.col-5 > div.cell-4 { height: 80%; }
+div.col-5 > div.cell-4-last { height: 80%; }
+div.col-6 > div.cell { height: 16%; }
+div.col-6 > div.cell-last { height: 17%; }
+div.col-6 > div.cell-1 { height: 16%; }
+div.col-6 > div.cell-1-last { height: 17%; }
+div.col-6 > div.cell-2 { height: 33%; }
+div.col-6 > div.cell-2-last { height: 34%; }
+div.col-6 > div.cell-3 { height: 50%; }
+div.col-6 > div.cell-3-last { height: 50%; }
+div.col-6 > div.cell-4 { height: 66%; }
+div.col-6 > div.cell-4-last { height: 67%; }
+div.col-6 > div.cell-5 { height: 83%; }
+div.col-6 > div.cell-5-last { height: 84%; }
+div.col-7 > div.cell { height: 14%; }
+div.col-7 > div.cell-last { height: 15%; }
+div.col-7 > div.cell-1 { height: 14%; }
+div.col-7 > div.cell-1-last { height: 15%; }
+div.col-7 > div.cell-2 { height: 28%; }
+div.col-7 > div.cell-2-last { height: 29%; }
+div.col-7 > div.cell-3 { height: 42%; }
+div.col-7 > div.cell-3-last { height: 43%; }
+div.col-7 > div.cell-4 { height: 57%; }
+div.col-7 > div.cell-4-last { height: 58%; }
+div.col-7 > div.cell-5 { height: 71%; }
+div.col-7 > div.cell-5-last { height: 72%; }
+div.col-7 > div.cell-6 { height: 85%; }
+div.col-7 > div.cell-6-last { height: 86%; }
+div.col-8 > div.cell { height: 12%; }
+div.col-8 > div.cell-last { height: 13%; }
+div.col-8 > div.cell-1 { height: 12%; }
+div.col-8 > div.cell-1-last { height: 13%; }
+div.col-8 > div.cell-2 { height: 25%; }
+div.col-8 > div.cell-2-last { height: 25%; }
+div.col-8 > div.cell-3 { height: 37%; }
+div.col-8 > div.cell-3-last { height: 38%; }
+div.col-8 > div.cell-4 { height: 50%; }
+div.col-8 > div.cell-4-last { height: 50%; }
+div.col-8 > div.cell-5 { height: 62%; }
+div.col-8 > div.cell-5-last { height: 63%; }
+div.col-8 > div.cell-6 { height: 75%; }
+div.col-8 > div.cell-6-last { height: 75%; }
+div.col-8 > div.cell-7 { height: 87%; }
+div.col-8 > div.cell-7-last { height: 88%; }
+div.col-9 > div.cell { height: 11%; }
+div.col-9 > div.cell-last { height: 12%; }
+div.col-9 > div.cell-1 { height: 11%; }
+div.col-9 > div.cell-1-last { height: 12%; }
+div.col-9 > div.cell-2 { height: 22%; }
+div.col-9 > div.cell-2-last { height: 23%; }
+div.col-9 > div.cell-3 { height: 33%; }
+div.col-9 > div.cell-3-last { height: 34%; }
+div.col-9 > div.cell-4 { height: 44%; }
+div.col-9 > div.cell-4-last { height: 45%; }
+div.col-9 > div.cell-5 { height: 55%; }
+div.col-9 > div.cell-5-last { height: 56%; }
+div.col-9 > div.cell-6 { height: 66%; }
+div.col-9 > div.cell-6-last { height: 67%; }
+div.col-9 > div.cell-7 { height: 77%; }
+div.col-9 > div.cell-7-last { height: 78%; }
+div.col-9 > div.cell-8 { height: 88%; }
+div.col-9 > div.cell-8-last { height: 89%; }
+div.col-10 > div.cell { height: 10%; }
+div.col-10 > div.cell-last { height: 10%; }
+div.col-10 > div.cell-1 { height: 10%; }
+div.col-10 > div.cell-1-last { height: 10%; }
+div.col-10 > div.cell-2 { height: 20%; }
+div.col-10 > div.cell-2-last { height: 20%; }
+div.col-10 > div.cell-3 { height: 30%; }
+div.col-10 > div.cell-3-last { height: 30%; }
+div.col-10 > div.cell-4 { height: 40%; }
+div.col-10 > div.cell-4-last { height: 40%; }
+div.col-10 > div.cell-5 { height: 50%; }
+div.col-10 > div.cell-5-last { height: 50%; }
+div.col-10 > div.cell-6 { height: 60%; }
+div.col-10 > div.cell-6-last { height: 60%; }
+div.col-10 > div.cell-7 { height: 70%; }
+div.col-10 > div.cell-7-last { height: 70%; }
+div.col-10 > div.cell-8 { height: 80%; }
+div.col-10 > div.cell-8-last { height: 80%; }
+div.col-10 > div.cell-9 { height: 90%; }
+div.col-10 > div.cell-9-last { height: 90%; }
 /* }}} */
 /* =position {{{
  * -------------------------- */
 div.softbox .center { text-align: center; }
 div.softbox div.center { margin-left: auto; margin-right: auto; }
 div.softbox .left { text-align: left; }
-div.softbox .right { text-align: right;
-	right: 0;
-}
-div.softbox .bottom {
-	position: absolute;
-	bottom: 0;
-}
+div.softbox .right { text-align: right; right: 0; }
+div.softbox .bottom { position: absolute; bottom: 0; }
 /* }}} */

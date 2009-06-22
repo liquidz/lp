@@ -5,13 +5,14 @@
 //	Copyright (C) 2009 Masashi Iizuka
 //	Dual licensed under the MIT and GPL licenses
 //
-//	Last update: 2009-06-15
+//	Last update: 2009-06-18
 //
 // ================================================
 
-if(typeof window.LP != 'undefined') delete window.LP;
+if(typeof window.LP !== 'undefined') delete window.LP;
 
 LP = {};
+LP.VERSION = "0.02";
 LP.slide = [];
 LP.currentSlide = 0;
 LP.options = {};
@@ -54,9 +55,9 @@ LP.common = {
 		var e = jQuery(document.createElement(tag));
 		if(op){
 			for(var key in arguments[1]){
-				if(key == "class") e.addClass(arguments[1][key]);
-				else if(key == "text") e.text(arguments[1][key]);
-				else if(key == "html") e.html(arguments[1][key]);
+				if(key === "class") e.addClass(arguments[1][key]);
+				else if(key === "text") e.text(arguments[1][key]);
+				else if(key === "html") e.html(arguments[1][key]);
 				else e.attr(key, arguments[1][key]);
 			}
 		}
@@ -65,14 +66,6 @@ LP.common = {
 
 	p: function(text){
 		return this.elem("p", {text: text});
-	},
-
-	clearer: function(){
-		var clearer = LP.common.elem("div");
-		clearer.css("clear", "both");
-		clearer.css("height", "0");
-		clearer.css("font-size", "0");
-		return clearer;
 	},
 
 	getOptionValue: function(tag){
@@ -112,17 +105,16 @@ LP.hide = function(obj, callback){
 //    default making title function
 // ----------------------------------------------
 LP.slideTitle = function(title){
+	var elem = LP.common.elem;
 	var fc = title.substr(0, 1);
 	var rest = title.substr(1);
-	var h2 = LP.common.elem("h2");
-	h2.append(LP.common.elem("span", {text: fc}).css("font-size", "150%"));
-	h2.append(LP.common.elem("span", {text: rest}));
+	var h2 = elem("h2");
+	h2.append(elem("span", {text: fc}).css("font-size", "150%"));
+	h2.append(elem("span", {text: rest}));
 	return h2;
 };
 
 LP.slideTakahashi = function(title){
-	//var h2 = LP.common.elem("div", {text: title, class: "takahashi"});
-	//h2.append(LP.common.elem("p", {text: title, class: "takahashi"}));
 	var h4 = LP.common.elem("h4", {text: title, class: "takahashi"});
 	return h4;
 };
@@ -160,60 +152,28 @@ LP.Slide.prototype = {
 	},
 	
 	toString: function(){
-		/*
-		var box = LP.common.elem("div", {
-			id: LP.id.slide.substr(1) + this.page,
-			class: LP.class.slide[0]
-		});
-		var main = LP.common.elem("div", {class: LP.class.slide[1]});
-
-		if(this.takahashi){
-			main.append(LP.slideTakahashi(this.title));
-		} else {
-			main.append(LP.slideTitle(this.title));
-		}
-
-		jQuery.each(this.body, function(){
-			main.append(this);
-		});
-
-		box.append(main);
-		var link = LP.common.elem("p");
-		link.append(LP.common.elem("a", {
-			href: "http://github.com/liquidz/lp/tree/master",
-			text: "powered by lp"
-		}));
-		link.css("float", "left");
-
-		var pager = LP.slidePageNum(this.page).addClass(LP.class.pager).css("float", "right");
-
-		box.append(link);
-		box.append(pager);
-		box.append(LP.common.clearer());
-		return box;
-		*/
-
-		var box = LP.common.elem("div", {
+		var elem = LP.common.elem;
+		var box = elem("div", {
 			id: LP.id.slide.substr(1) + this.page,
 			class: "slide softbox"
 		});
 
 		var head = null, body = null, foot = null;
-		var link = LP.common.elem("div", { class: "cell left" });
-		var page = LP.common.elem("div", { class: "cell" });
+		var link = elem("div", { class: "cell left" });
+		var page = elem("div", { class: "cell last" });
 
 		if(this.takahashi){
 			box.addClass("col-3");
-			head = LP.common.elem("div", { class: "cell"});
-			body = LP.common.elem("div", { class: "cell main center"});
-			foot = LP.common.elem("div", { class: "cell span-2"});
+			head = elem("div", { class: "cell"});
+			body = elem("div", { class: "cell main center"});
+			foot = elem("div", { class: "cell span-2"});
 
-			body.append(LP.common.elem("h4", { text: this.title, class: "takahashi" }));
+			body.append(elem("h4", { text: this.title, class: "takahashi" }));
 		} else {
 			box.addClass("col-10");
-			head = LP.common.elem("div", { class: "cell-2 center" });
-			body = LP.common.elem("div", { class: "cell-7 main" });
-			foot = LP.common.elem("div", { class: "cell-1 span-2" });
+			head = elem("div", { class: "cell-2 center" });
+			body = elem("div", { class: "cell-7 main" });
+			foot = elem("div", { class: "cell-1 span-2" });
 
 			head.append(LP.slideTitle(this.title));
 			jQuery.each(this.body, function(){
@@ -222,9 +182,9 @@ LP.Slide.prototype = {
 
 		}
 
-		link.append(LP.common.elem("p", { class: "bottom" }).append(LP.common.elem("a", {
+		link.append(elem("p", { class: "bottom" }).append(elem("a", {
 			href: "http://github.com/liquidz/lp/tree/master",
-			text: "powered by lp"
+			text: "powered by lp " + LP.VERSION
 		})));
 		page.append(LP.slidePageNum(this.page).addClass(LP.class.pager + " bottom right"));
 
@@ -282,16 +242,17 @@ LP.Table.prototype = {
 		return null;
 	},
 	add: function(objs){
-		var tr = LP.common.elem("tr");
+		var elem = LP.common.elem;
+		var tr = elem("tr");
 		var th = false;
 
 		if(!this.active){
-			this.body = LP.common.elem("table");
+			this.body = elem("table");
 			this.active = true;
 			th = true;
 		}
-		for(var i = 0; i < objs.length; ++i){
-			tr.append(LP.common.elem((th ? "th" : "td"), {text: objs[i]}));
+		for(var i = 0, l = objs.length; i < l; ++i){
+			tr.append(elem((th ? "th" : "td"), {text: objs[i]}));
 		}
 		this.body.append(tr);
 	}
@@ -321,7 +282,7 @@ LP.parseContents = function(cont){
 	};
 
 	var str = cont;
-	while(str != ""){
+	while(str !== ""){
 		if(str.match(/^(\=+)\s*(.+?)(\n|$)/)){
 			// header
 
@@ -331,7 +292,7 @@ LP.parseContents = function(cont){
 			if(table.active) page.add(table.finish());
 
 
-			if(page != null) result.push(page);
+			if(page !== null) result.push(page);
 
 			var level = RegExp.$1.length;
 			var title = RegExp.$2;
@@ -347,7 +308,7 @@ LP.parseContents = function(cont){
 			// 表を作成中だったら閉じる
 			if(table.active) page.add(table.finish());
 
-			if(page != null) result.push(page);
+			if(page !== null) result.push(page);
 			var title = RegExp.$1;
 			var rest = RegExp.rightContext;
 			page = new LP.Slide(title, pageCount++, {takahashi: true});
@@ -374,7 +335,7 @@ LP.parseContents = function(cont){
 			str = jQuery.trim(rest);
 
 			// $
-			if(str == ""){
+			if(str === ""){
 				for(var i = lastLevel; i > 0; --i){
 					lists[i-1].add(lists[i].finish());
 					lists[i] = null;
@@ -395,7 +356,7 @@ LP.parseContents = function(cont){
 			str = jQuery.trim(rest);
 
 			// $
-			if(str == "") page.add(table.finish());
+			if(str === "") page.add(table.finish());
 		} else if(str.match(/^\{\{\{([\s\S]+?)\}\}\}(\n|$)/)){
 			// code
 
@@ -431,7 +392,7 @@ LP.parseContents = function(cont){
 			var rest = RegExp.rightContext;
 
 			var val = text.split("=");
-			if(val.length == 2) LP.options[jQuery.trim(val[0])] = jQuery.trim(val[1]);
+			if(val.length === 2) LP.options[jQuery.trim(val[0])] = jQuery.trim(val[1]);
 			str = jQuery.trim(rest);
 		} else {
 			// p
@@ -452,7 +413,7 @@ LP.parseContents = function(cont){
 			}
 		}
 	}
-	if(page != null) result.push(page);
+	if(page !== null) result.push(page);
 
 	return result;
 }; // }}}
@@ -481,7 +442,7 @@ LP.toggleSlide = function(from, to){
 // =next
 // ----------------------------------------------
 LP.next = function(){
-	if(LP.mode == LP.modeKind.slide && !LP.isToggling){
+	if(LP.mode === LP.modeKind.slide && !LP.isToggling){
 		var last = LP.currentSlide;
 		if(LP.currentSlide < LP.slide.length - 1){
 			++LP.currentSlide;
@@ -495,7 +456,7 @@ LP.next = function(){
 // =prev
 // ----------------------------------------------
 LP.prev = function(){
-	if(LP.mode == LP.modeKind.slide && !LP.isToggling){
+	if(LP.mode === LP.modeKind.slide && !LP.isToggling){
 		var last = LP.currentSlide;
 		if(LP.currentSlide > 0){
 			--LP.currentSlide;
@@ -507,7 +468,7 @@ LP.prev = function(){
 // =updateSize
 // ----------------------------------------------
 LP.updateSize = function(){
-	if(LP.mode == LP.modeKind.viewAll){
+	if(LP.mode === LP.modeKind.viewAll){
 		var w = $("body").width();
 		var s = $("div." + LP.class.slide[0]);
 		s.width(w * 14 / 64);
@@ -516,7 +477,7 @@ LP.updateSize = function(){
 
 	// スライド一覧からTOCを選ぶと何故かフォントサイズがちゃんと変更されないので
 	// TOCを表示する場合には違うスライドを選ぶ
-	var ss = $(LP.id.slide + ((LP.currentSlide == 0) ? "1" : "0"));
+	var ss = $(LP.id.slide + ((LP.currentSlide === 0) ? "1" : "0"));
 	var title = $(LP.id.slide + "0 div." + LP.class.slide[1] + " h2")
 	var fontSize = (ss.width() * 3 / 5) / ((title.text().length > 10) ? title.text().length / 2 : title.text().length);
 	fontSize = (fontSize > ss.height() / 12) ? ss.height() / 12 : fontSize;
@@ -540,7 +501,7 @@ LP.tableOfContents = function(title){
 	var author = "";
 	if(LP.options["author"]) author = LP.options["author"];
 	var tmp = jQuery.trim(date + " " + author);
-	if(tmp != "") toc.add(LP.common.p(tmp).addClass("center"));
+	if(tmp !== "") toc.add(LP.common.p(tmp).addClass("center"));
 
 	// sections
 	toc.add(LP.common.elem("h3", {text: "Table of Contents"}));
@@ -610,7 +571,7 @@ LP.keyControl = function(e){
 		break;
 
 	case LP.key.home:
-		if(LP.mode == LP.modeKind.slide){
+		if(LP.mode === LP.modeKind.slide){
 			LP.changeToViewAllMode();
 		} else {
 			LP.changeToSlideMode();
@@ -625,7 +586,7 @@ LP.keyControl = function(e){
 // =wheelControl {{{
 // ----------------------------------------------
 LP.wheelControl = function(event, delta){
-	if(LP.mode == LP.modeKind.slide && !LP.wheelFlag){
+	if(LP.mode === LP.modeKind.slide && !LP.wheelFlag){
 
 		event.stopPropagation();
 		event.preventDefault();
@@ -684,7 +645,7 @@ $(function(){
 		// add each slides(page = 1 - LP.slide.length)
 		jQuery.each(LP.slide, function(){
 			body.append(this.toString());
-			if(this.page != 0)
+			if(this.page !== 0)
 			$(LP.id.slide + this.page).hide();
 			});
 
