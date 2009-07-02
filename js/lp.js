@@ -5,14 +5,14 @@
 //	Copyright (C) 2009 Masashi Iizuka
 //	Dual licensed under the MIT and GPL licenses
 //
-//	Last update: 2009-06-18
+//	Last update: 2009-07-02
 //
 // ================================================
 
 if(typeof window.LP !== 'undefined') delete window.LP;
 
 LP = {};
-LP.VERSION = "0.02";
+LP.VERSION = "0.03";
 LP.slide = [];
 LP.currentSlide = 0;
 LP.options = {};
@@ -179,10 +179,10 @@ LP.Slide.prototype = {
 			jQuery.each(this.body, function(){
 				body.append(this);
 			});
-
 		}
 
 		link.append(elem("p", { class: "bottom" }).append(elem("a", {
+			class: "footer_link",
 			href: "http://github.com/liquidz/lp/tree/master",
 			text: "powered by lp " + LP.VERSION
 		})));
@@ -252,10 +252,40 @@ LP.Table.prototype = {
 			th = true;
 		}
 		for(var i = 0, l = objs.length; i < l; ++i){
-			tr.append(elem((th ? "th" : "td"), {text: objs[i]}));
+			tr.append(elem((th ? "th" : "td"), {html: LP.textDecoration(objs[i])}));
 		}
 		this.body.append(tr);
 	}
+}; // }}}
+
+// =TextDecorationFuncs {{{
+// ----------------------------------------------
+LP.TextDecorationFuncs = {
+	'big': function(){
+		return ['font-size: 200%', 'line-height: 150%'];
+	},
+	'red': function(){
+		return ['color: red'];
+	}
+}; // }}}
+// =textDecoration {{{
+// ----------------------------------------------
+LP.textDecoration = function(str){
+	var text = str;
+	if(str.match(/(\[[A-Za-z\,\ ]+\])/)){
+		var decoration = RegExp.$1;
+		var styles = [];
+		jQuery.each(decoration.replace(/[\[\]]/g, "").split(","), function(){
+			var key = jQuery.trim(this);
+			if(LP.TextDecorationFuncs[key]){
+				jQuery.each(LP.TextDecorationFuncs[key](), function(){
+					styles.push(this);
+				});
+			}
+		});
+		text = "<span style='"+ styles.join("; ") +"'>" + text.replace(decoration, "") + "</span>"
+	}
+	return text;
 }; // }}}
 
 // =parseContents {{{
@@ -300,7 +330,7 @@ LP.parseContents = function(cont){
 			page = new LP.Slide(title, pageCount++);
 			if(level > 1) page.setSubsection(true);
 			str = jQuery.trim(rest);
-		} else if(str.match(/^\!\=\s*(.+?)(\n|$)/)){
+		} else if(str.match(/^\!(\=+)\s*(.+?)(\n|$)/)){
 			// header only
 
 			// リストを作成中だったら閉じる
@@ -309,10 +339,11 @@ LP.parseContents = function(cont){
 			if(table.active) page.add(table.finish());
 
 			if(page !== null) result.push(page);
-			var title = RegExp.$1;
+			var level = RegExp.$1.length;
+			var title = RegExp.$2;
 			var rest = RegExp.rightContext;
 			page = new LP.Slide(title, pageCount++, {takahashi: true});
-			page.setSubsection(true);
+			if(level > 1) page.setSubsection(true);
 			str = jQuery.trim(rest);
 
 		} else if(str.match(/^(\*+)\s*(.+?)(\n|$)/)){
@@ -330,7 +361,7 @@ LP.parseContents = function(cont){
 					lists[i] = null;
 				}
 			}
-			lists[level].add(LP.common.elem("li", {text: text}));
+			lists[level].add(LP.common.elem("li", {html: LP.textDecoration(text)}));
 			lastLevel = level;
 			str = jQuery.trim(rest);
 
@@ -615,9 +646,10 @@ LP.initialize = function(){
 	var body = $("body");
 	LP.common.setBg(function(bg){ body.css("background", bg) });
 	LP.common.setFg(function(fg){
-			body.css("color", fg);
-			$("table tr th, table tr td").css("border", "1px solid " + fg);
-			});
+		body.css("color", fg);
+		$("table tr th, table tr td").css("border", "1px solid " + fg);
+		$("a.footer_link").css("color", fg);
+	});
 
 	LP.common.updateEffectSpeed();
 
