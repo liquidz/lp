@@ -5,7 +5,7 @@
 //	Copyright (C) 2009 Masashi Iizuka
 //	Dual licensed under the MIT and GPL licenses
 //
-//	Last update: 2009-07-02
+//	Last update: 2009-07-03
 //
 // ================================================
 
@@ -14,7 +14,8 @@ if(typeof window.LP !== 'undefined') delete window.LP;
 LP = {};
 LP.VERSION = "0.03";
 LP.slide = [];
-LP.currentSlide = 0;
+LP.currentSlide = 0;          // 表示中のスライド番号
+// =CONSTANT VARIABLES {{{
 LP.options = {};
 LP.optag = { fg: "fg", bg: "bg", effectSpeed: "effectSpeed" };
 LP.modeKind = {
@@ -48,6 +49,7 @@ LP.style = {
 		}
 	}
 };
+// }}}
 
 // =common {{{
 LP.common = {
@@ -87,8 +89,7 @@ LP.common = {
 	}
 }; // }}}
 
-// ----------- customable functions -----------
-
+// ----------- customable functions ----------- {{{
 // =show, =hide
 //    default show/hide function
 // ----------------------------------------------
@@ -125,6 +126,7 @@ LP.slideTakahashi = function(title){
 LP.slidePageNum = function(page){
 	return LP.common.p(page);
 };
+// }}}
 
 // =Slide Class {{{
 // ----------------------------------------------
@@ -449,13 +451,13 @@ LP.parseContents = function(cont){
 	return result;
 }; // }}}
 
-// =getEffectSpeed
+// =getEffectSpeed {{{
 // ----------------------------------------------
 LP.getEffectSpeed = function(){
 	return (LP.options["nowait"]) ? 0 : LP.effectSpeed;
-};
+}; // }}}
 
-// =toggleSlide
+// =toggleSlide {{{
 // ----------------------------------------------
 LP.toggleSlide = function(from, to){
 	// start
@@ -468,9 +470,9 @@ LP.toggleSlide = function(from, to){
 			LP.isToggling = false;
 		});
 	});
-};
+}; // }}}
 
-// =next
+// =next {{{
 // ----------------------------------------------
 LP.next = function(){
 	if(LP.mode === LP.modeKind.slide && !LP.isToggling){
@@ -483,8 +485,9 @@ LP.next = function(){
 			LP.changeToViewAllMode();
 		}
 	}
-};
-// =prev
+}; // }}}
+
+// =prev {{{
 // ----------------------------------------------
 LP.prev = function(){
 	if(LP.mode === LP.modeKind.slide && !LP.isToggling){
@@ -494,9 +497,9 @@ LP.prev = function(){
 			LP.toggleSlide($(LP.id.slide + last), $(LP.id.slide + LP.currentSlide));
 		}
 	}
-};
+}; // }}}
 
-// =updateSize
+// =updateSize {{{
 // ----------------------------------------------
 LP.updateSize = function(){
 	if(LP.mode === LP.modeKind.viewAll){
@@ -517,9 +520,9 @@ LP.updateSize = function(){
 	$("table tr th, table tr td").css("font-size", fontSize * 2 / 5 + "px");
 	$("code").css("font-size", fontSize / 3 + "px");
 	$("p." + LP.class.pager).css("font-size", fontSize / 3 + "px");
-};
+}; // }}}
 
-// =tableOfContents
+// =tableOfContents {{{
 // ----------------------------------------------
 LP.tableOfContents = function(title){
 	var toc = new LP.Slide(title, 0);
@@ -543,7 +546,7 @@ LP.tableOfContents = function(title){
 	toc.add(list.finish());
 
 	return toc;
-};
+}; // }}}
 
 // =changeToSlideMode {{{
 // ----------------------------------------------
@@ -629,6 +632,32 @@ LP.wheelControl = function(event, delta){
 	}
 }; // }}}
 
+// =jsLoader {{{
+// ----------------------------------------------
+LP.jsLoader = function(srcs, callback){
+	var loadedNum = 0;
+	for(var i = 0, l = srcs.length; i < l; ++i){
+		var obj = document.createElement("script");
+		obj.src = srcs[i];
+
+		if(window.ActiveXObject){
+			obj.onreadystatechange = function(){
+				if(obj.readyState === "loaded"){
+					++loadedNum;
+					if(loadedNum === srcs.length) callback(obj.readyState);
+				}
+			};
+		} else {
+			obj.onload = function(){
+				++loadedNum;
+				if(loadedNum === srcs.length) callback("loaded");
+			};
+		}
+
+		document.body.appendChild(obj);
+	}
+}; // }}}
+
 // =initialize
 // ----------------------------------------------
 LP.initialize = function(){
@@ -658,7 +687,12 @@ LP.initialize = function(){
 
 // =main
 // ----------------------------------------------
-$(function(){
+LP._onload = window.onload;
+window.onload = function(){
+	LP.jsLoader(["prettify/prettify.js", "js/jquery-1.3.2.min.js", "js/jquery.mousewheel.min.js"],
+	function(state){
+		if(state !== "loaded") return;
+
 		var title = $("head title").text();
 		var body = $("body");
 		var contents = jQuery.trim($("body pre").html());
@@ -685,5 +719,6 @@ $(function(){
 		LP.initialize();
 
 		prettyPrint();
-});
-
+	});
+	if(LP._onload) LP._onload();
+};
