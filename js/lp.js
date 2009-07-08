@@ -5,7 +5,7 @@
 //	Copyright (C) 2009 Masashi Iizuka
 //	Dual licensed under the MIT and GPL licenses
 //
-//	Last update: 2009-07-03
+//	Last update: 2009-07-08
 //
 // ================================================
 
@@ -263,11 +263,14 @@ LP.Table.prototype = {
 // =TextDecorationFuncs {{{
 // ----------------------------------------------
 LP.TextDecorationFuncs = {
-	'big': function(){
+	big: function(){
 		return ['font-size: 200%', 'line-height: 150%'];
 	},
-	'red': function(){
+	red: function(){
 		return ['color: red'];
+	},
+	b: function(){
+		return ['font-weight: bold'];
 	}
 }; // }}}
 // =textDecoration {{{
@@ -505,7 +508,7 @@ LP.updateSize = function(){
 	if(LP.mode === LP.modeKind.viewAll){
 		var w = $("body").width();
 		var s = $("div." + LP.class.slide[0]);
-		s.width(w * 14 / 64);
+		s.width(w * 3 / 16);
 		s.height(s.width() * 2 / 3);
 	}
 
@@ -668,7 +671,6 @@ LP.initialize = function(){
 	var w = $(window);
 	w.bind("resize", LP.updateSize);
 	w.bind("keypress", LP.keyControl);
-	//$("div." + LP.class.slide[0]).mousewheel(LP.wheelControl);
 	$("body").mousewheel(LP.wheelControl);
 
 	// set options
@@ -681,8 +683,6 @@ LP.initialize = function(){
 	});
 
 	LP.common.updateEffectSpeed();
-
-	//if(LP.options["effectSpeed"]) LP.effectSpeed = parseInt(LP.options["effectSpeed"]);
 };
 
 // =main
