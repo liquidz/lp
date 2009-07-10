@@ -635,32 +635,6 @@ LP.wheelControl = function(event, delta){
 	}
 }; // }}}
 
-// =jsLoader {{{
-// ----------------------------------------------
-LP.jsLoader = function(srcs, callback){
-	var loadedNum = 0;
-	for(var i = 0, l = srcs.length; i < l; ++i){
-		var obj = document.createElement("script");
-		obj.src = srcs[i];
-
-		if(window.ActiveXObject){
-			obj.onreadystatechange = function(){
-				if(obj.readyState === "loaded"){
-					++loadedNum;
-					if(loadedNum === srcs.length) callback(obj.readyState);
-				}
-			};
-		} else {
-			obj.onload = function(){
-				++loadedNum;
-				if(loadedNum === srcs.length) callback("loaded");
-			};
-		}
-
-		document.body.appendChild(obj);
-	}
-}; // }}}
-
 // =initialize
 // ----------------------------------------------
 LP.initialize = function(){
@@ -687,38 +661,30 @@ LP.initialize = function(){
 
 // =main
 // ----------------------------------------------
-LP._onload = window.onload;
-window.onload = function(){
-	LP.jsLoader(["prettify/prettify.js", "js/jquery-1.3.2.min.js", "js/jquery.mousewheel.min.js"],
-	function(state){
-		if(state !== "loaded") return;
+$(function(){
+	var title = $("head title").text();
+	var body = $("body");
+	var contents = jQuery.trim($("body pre").html());
 
-		var title = $("head title").text();
-		var body = $("body");
-		var contents = jQuery.trim($("body pre").html());
+	// clear body
+	body.text("");
 
-		// clear body
-		body.text("");
+	// parse body text
+	LP.slide = LP.parseContents(contents);
 
-		// parse body text
-		LP.slide = LP.parseContents(contents);
+	LP.slide.unshift(LP.tableOfContents(title));
 
-		LP.slide.unshift(LP.tableOfContents(title));
+	// add table of contents(page = 0)
+	//body.append(LP.tableOfContents(title));
 
-		// add table of contents(page = 0)
-		//body.append(LP.tableOfContents(title));
-
-		// add each slides(page = 1 - LP.slide.length)
-		jQuery.each(LP.slide, function(){
-			body.append(this.toString());
-			if(this.page !== 0)
-			$(LP.id.slide + this.page).hide();
-			});
-
-		// initialize
-		LP.initialize();
-
-		prettyPrint();
+	// add each slides(page = 1 - LP.slide.length)
+	jQuery.each(LP.slide, function(){
+		body.append(this.toString());
+		if(this.page !== 0) $(LP.id.slide + this.page).hide();
 	});
-	if(LP._onload) LP._onload();
-};
+
+	// initialize
+	LP.initialize();
+
+	prettyPrint();
+});
