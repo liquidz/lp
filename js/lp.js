@@ -139,8 +139,12 @@ LP.Slide = function(title, page, options){
 	// methods
 	this.takahashi = false;
 
+	// new background
+	this.background = null;
+
 	if(options){
 		if(options.takahashi) this.takahashi = options.takahashi;
+		if(options.background) this.background = options.background;
 	}
 };
 LP.Slide.prototype = {
@@ -332,7 +336,15 @@ LP.parseContents = function(cont){
 			var level = RegExp.$1.length;
 			var title = RegExp.$2;
 			var rest = RegExp.rightContext;
-			page = new LP.Slide(title, pageCount++);
+			var options = null;
+
+			if(title.match(/\(%bg=(.+?)%\)/)){
+				var slideBg = RegExp.$1;
+				title = title.replace(/\(%.+?%\)/, "")
+				options = {background: slideBg};
+			}
+
+			page = new LP.Slide(title, pageCount++, options);
 			if(level > 1) page.setSubsection(true);
 			str = jQuery.trim(rest);
 		} else if(str.match(/^\!(\=+)\s*(.+?)(\n|$)/)){
@@ -347,7 +359,15 @@ LP.parseContents = function(cont){
 			var level = RegExp.$1.length;
 			var title = RegExp.$2;
 			var rest = RegExp.rightContext;
-			page = new LP.Slide(title, pageCount++, {takahashi: true});
+			var options = {takahashi: true};
+
+			if(title.match(/\(%bg=(.+?)%\)/)){
+				var slideBg = RegExp.$1;
+				title = title.replace(/\(%.+?%\)/, "")
+				options.background = slideBg;
+			}
+
+			page = new LP.Slide(title, pageCount++, options);
 			if(level > 1) page.setSubsection(true);
 			str = jQuery.trim(rest);
 
@@ -468,6 +488,14 @@ LP.toggleSlide = function(from, to){
 
 	LP.isToggling = true;
 	LP.hide(from, function(){
+
+		// bg change
+		if(LP.slide[LP.currentSlide].background){
+			LP.common.setBg(function(bg){
+				$("body").css("background", LP.slide[LP.currentSlide].background);
+			});
+		}
+
 		LP.show(to, function(){
 			// end
 			LP.isToggling = false;
